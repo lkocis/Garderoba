@@ -1,0 +1,6 @@
+@Garderoba_HostAddress = http://localhost:5286
+
+GET {{Garderoba_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
