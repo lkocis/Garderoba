@@ -1,7 +1,52 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "D:\\Garderoba\\Garderoba\\Garderoba\\",
-  "Documents": [],
+  "WorkspaceRootPath": "D:\\Garderoba\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{2070412F-5BC2-4726-B69C-CDFE23F81693}|Garderoba\\Garderoba.csproj|d:\\garderoba\\garderoba\\webapi\\controllers\\usercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2070412F-5BC2-4726-B69C-CDFE23F81693}|Garderoba\\Garderoba.csproj|solutionrelative:garderoba\\webapi\\controllers\\usercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2070412F-5BC2-4726-B69C-CDFE23F81693}|Garderoba\\Garderoba.csproj|d:\\garderoba\\garderoba\\webapi\\viewmodel\\userbyid.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2070412F-5BC2-4726-B69C-CDFE23F81693}|Garderoba\\Garderoba.csproj|solutionrelative:garderoba\\webapi\\viewmodel\\userbyid.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2070412F-5BC2-4726-B69C-CDFE23F81693}|Garderoba\\Garderoba.csproj|d:\\garderoba\\garderoba\\model\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2070412F-5BC2-4726-B69C-CDFE23F81693}|Garderoba\\Garderoba.csproj|solutionrelative:garderoba\\model\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2070412F-5BC2-4726-B69C-CDFE23F81693}|Garderoba\\Garderoba.csproj|d:\\garderoba\\garderoba\\webapi\\viewmodel\\logingrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2070412F-5BC2-4726-B69C-CDFE23F81693}|Garderoba\\Garderoba.csproj|solutionrelative:garderoba\\webapi\\viewmodel\\logingrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2070412F-5BC2-4726-B69C-CDFE23F81693}|Garderoba\\Garderoba.csproj|d:\\garderoba\\garderoba\\webapi\\viewmodel\\registrationrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2070412F-5BC2-4726-B69C-CDFE23F81693}|Garderoba\\Garderoba.csproj|solutionrelative:garderoba\\webapi\\viewmodel\\registrationrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2070412F-5BC2-4726-B69C-CDFE23F81693}|Garderoba\\Garderoba.csproj|d:\\garderoba\\garderoba\\repository\\userrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2070412F-5BC2-4726-B69C-CDFE23F81693}|Garderoba\\Garderoba.csproj|solutionrelative:garderoba\\repository\\userrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2070412F-5BC2-4726-B69C-CDFE23F81693}|Garderoba\\Garderoba.csproj|d:\\garderoba\\garderoba\\service.common\\iuserservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2070412F-5BC2-4726-B69C-CDFE23F81693}|Garderoba\\Garderoba.csproj|solutionrelative:garderoba\\service.common\\iuserservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2070412F-5BC2-4726-B69C-CDFE23F81693}|Garderoba\\Garderoba.csproj|d:\\garderoba\\garderoba\\service\\userservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2070412F-5BC2-4726-B69C-CDFE23F81693}|Garderoba\\Garderoba.csproj|solutionrelative:garderoba\\service\\userservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2070412F-5BC2-4726-B69C-CDFE23F81693}|Garderoba\\Garderoba.csproj|d:\\garderoba\\garderoba\\repository.common\\iuserrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2070412F-5BC2-4726-B69C-CDFE23F81693}|Garderoba\\Garderoba.csproj|solutionrelative:garderoba\\repository.common\\iuserrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2070412F-5BC2-4726-B69C-CDFE23F81693}|Garderoba\\Garderoba.csproj|d:\\garderoba\\garderoba\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{2070412F-5BC2-4726-B69C-CDFE23F81693}|Garderoba\\Garderoba.csproj|solutionrelative:garderoba\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2070412F-5BC2-4726-B69C-CDFE23F81693}|Garderoba\\Garderoba.csproj|d:\\garderoba\\garderoba\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2070412F-5BC2-4726-B69C-CDFE23F81693}|Garderoba\\Garderoba.csproj|solutionrelative:garderoba\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
   "DocumentGroupContainers": [
     {
       "Orientation": 0,
@@ -9,11 +54,158 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": -1,
+          "SelectedChildIndex": 7,
           "Children": [
             {
               "$type": "Bookmark",
               "Name": "ST:0:0:{cce594b6-0c39-4442-ba28-10c64ac7e89f}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "UserById.cs",
+              "DocumentMoniker": "D:\\Garderoba\\Garderoba\\WebApi\\ViewModel\\UserById.cs",
+              "RelativeDocumentMoniker": "Garderoba\\WebApi\\ViewModel\\UserById.cs",
+              "ToolTip": "D:\\Garderoba\\Garderoba\\WebApi\\ViewModel\\UserById.cs",
+              "RelativeToolTip": "Garderoba\\WebApi\\ViewModel\\UserById.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAApAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-28T18:27:32.739Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "RegistrationRequest.cs",
+              "DocumentMoniker": "D:\\Garderoba\\Garderoba\\WebApi\\ViewModel\\RegistrationRequest.cs",
+              "RelativeDocumentMoniker": "Garderoba\\WebApi\\ViewModel\\RegistrationRequest.cs",
+              "ToolTip": "D:\\Garderoba\\Garderoba\\WebApi\\ViewModel\\RegistrationRequest.cs",
+              "RelativeToolTip": "Garderoba\\WebApi\\ViewModel\\RegistrationRequest.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAArAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-28T18:18:42.772Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "LogingRequest.cs",
+              "DocumentMoniker": "D:\\Garderoba\\Garderoba\\WebApi\\ViewModel\\LogingRequest.cs",
+              "RelativeDocumentMoniker": "Garderoba\\WebApi\\ViewModel\\LogingRequest.cs",
+              "ToolTip": "D:\\Garderoba\\Garderoba\\WebApi\\ViewModel\\LogingRequest.cs",
+              "RelativeToolTip": "Garderoba\\WebApi\\ViewModel\\LogingRequest.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAAAsAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-28T18:16:40.175Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "D:\\Garderoba\\Garderoba\\appsettings.json",
+              "RelativeDocumentMoniker": "Garderoba\\appsettings.json",
+              "ToolTip": "D:\\Garderoba\\Garderoba\\appsettings.json",
+              "RelativeToolTip": "Garderoba\\appsettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAAEAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2025-05-28T17:12:07.753Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{aa2115a1-9712-457b-9047-dbb71ca2cdd2}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "Program.cs",
+              "DocumentMoniker": "D:\\Garderoba\\Garderoba\\Program.cs",
+              "RelativeDocumentMoniker": "Garderoba\\Program.cs",
+              "ToolTip": "D:\\Garderoba\\Garderoba\\Program.cs",
+              "RelativeToolTip": "Garderoba\\Program.cs",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAAAAwAAAA+AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-27T16:27:18.708Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "UserController.cs",
+              "DocumentMoniker": "D:\\Garderoba\\Garderoba\\WebApi\\Controllers\\UserController.cs",
+              "RelativeDocumentMoniker": "Garderoba\\WebApi\\Controllers\\UserController.cs",
+              "ToolTip": "D:\\Garderoba\\Garderoba\\WebApi\\Controllers\\UserController.cs",
+              "RelativeToolTip": "Garderoba\\WebApi\\Controllers\\UserController.cs",
+              "ViewState": "AgIAAE4AAAAAAAAAAAAtwB8AAAAQAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-27T16:13:49.715Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "UserService.cs",
+              "DocumentMoniker": "D:\\Garderoba\\Garderoba\\Service\\UserService.cs",
+              "RelativeDocumentMoniker": "Garderoba\\Service\\UserService.cs",
+              "ToolTip": "D:\\Garderoba\\Garderoba\\Service\\UserService.cs",
+              "RelativeToolTip": "Garderoba\\Service\\UserService.cs",
+              "ViewState": "AgIAAAoAAAAAAAAAAIAzwBoAAAAVAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-27T16:07:44.979Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "IUserService.cs",
+              "DocumentMoniker": "D:\\Garderoba\\Garderoba\\Service.Common\\IUserService.cs",
+              "RelativeDocumentMoniker": "Garderoba\\Service.Common\\IUserService.cs",
+              "ToolTip": "D:\\Garderoba\\Garderoba\\Service.Common\\IUserService.cs",
+              "RelativeToolTip": "Garderoba\\Service.Common\\IUserService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAABCAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-27T16:05:59.476Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "User.cs",
+              "DocumentMoniker": "D:\\Garderoba\\Garderoba\\Model\\User.cs",
+              "RelativeDocumentMoniker": "Garderoba\\Model\\User.cs",
+              "ToolTip": "D:\\Garderoba\\Garderoba\\Model\\User.cs",
+              "RelativeToolTip": "Garderoba\\Model\\User.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAAArAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-27T16:03:16.918Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "IUserRepository.cs",
+              "DocumentMoniker": "D:\\Garderoba\\Garderoba\\Repository.Common\\IUserRepository.cs",
+              "RelativeDocumentMoniker": "Garderoba\\Repository.Common\\IUserRepository.cs",
+              "ToolTip": "D:\\Garderoba\\Garderoba\\Repository.Common\\IUserRepository.cs",
+              "RelativeToolTip": "Garderoba\\Repository.Common\\IUserRepository.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAABCAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-26T16:20:22.426Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "UserRepository.cs",
+              "DocumentMoniker": "D:\\Garderoba\\Garderoba\\Repository\\UserRepository.cs",
+              "RelativeDocumentMoniker": "Garderoba\\Repository\\UserRepository.cs",
+              "ToolTip": "D:\\Garderoba\\Garderoba\\Repository\\UserRepository.cs",
+              "RelativeToolTip": "Garderoba\\Repository\\UserRepository.cs",
+              "ViewState": "AgIAAA4AAAAAAAAAAAAAwBoAAAARAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-26T16:15:36.258Z",
+              "EditorCaption": ""
             }
           ]
         }
