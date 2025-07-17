@@ -35,7 +35,9 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddControllers();
 
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IChoreographyService, ChoreographyService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IChoreographyRepository, ChoreographyRepository>();
 
 //Add authorization
 builder.Services.AddAuthorization();

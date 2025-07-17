@@ -1,5 +1,21 @@
 [
   {
+    "ContainingType": "Garderoba.WebApi.Controllers.ChoreographyController",
+    "Method": "CreateNewChoreographyAsync",
+    "RelativePath": "Choreography/CreateChoreography",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "Garderoba.WebApi.ViewModel.ChoreographyCreation",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "Garderoba.WebApi.Controllers.UserController",
     "Method": "CreateUserAsync",
     "RelativePath": "User/CreateUser",
