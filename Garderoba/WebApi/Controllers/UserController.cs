@@ -1,9 +1,14 @@
 ﻿using Garderoba.Model;
 using Garderoba.Service.Common;
 using Garderoba.WebApi.ViewModel;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace Garderoba.WebApi.Controllers
 {
@@ -12,11 +17,14 @@ namespace Garderoba.WebApi.Controllers
     public class UserController : ControllerBase
     {
         private readonly IUserService _userService;
-        public UserController(IUserService userService)
+        private readonly IConfiguration _configuration;
+        public UserController(IUserService userService, IConfiguration configuration)
         {
             _userService = userService;
+            _configuration = configuration;
         }
 
+        [Authorize]
         [HttpGet]
         [Route("ReadUser/{id}")]
         public async Task<ActionResult> ReadUserAsync(Guid id)
@@ -42,14 +50,14 @@ namespace Garderoba.WebApi.Controllers
 
         [HttpPost]
         [Route("CreateUser")]
-        public async Task<ActionResult> CreateUserAsync([FromBody]RegistrationRequest request)
+        public async Task<ActionResult> CreateUserAsync([FromBody] RegistrationRequest request)
         {
             try
             {
                 var user = new User
                 {
                     Email = request.Email,
-                    Password = BCrypt.Net.BCrypt.HashPassword(request.Password),
+                    Password = request.Password,
                     FirstName = request.FirstName,
                     LastName = request.LastName,
                     PhoneNumber = request.PhoneNumber,
@@ -61,7 +69,7 @@ namespace Garderoba.WebApi.Controllers
                 bool success = await _userService.CreateUserAsync(user);
                 if (success)
                 {
-                    return StatusCode(201, $"User created!"); 
+                    return StatusCode(201, $"User created!");
                 }
                 else
                 {
@@ -74,11 +82,12 @@ namespace Garderoba.WebApi.Controllers
             }
         }
 
+        [AllowAnonymous]
         [HttpPost]
         [Route("Login")]
         public async Task<IActionResult> LoginUserAsync([FromBody] LogingRequest request)
         {
-            if(request == null)
+            if (request == null)
             {
                 return Unauthorized("Email and password cannot be empty!");
             }
@@ -89,7 +98,62 @@ namespace Garderoba.WebApi.Controllers
                 return Unauthorized("Invalid email or password.");
             }
 
-            return Ok(request.Email + " logged in!"); 
+            // Read JWT settings from configuration
+            var keyString = _configuration["Jwt:Key"];
+            var issuer = _configuration["Jwt:Issuer"];
+            var audience = _configuration["Jwt:Audience"];
+
+            if (string.IsNullOrEmpty(keyString))
+            {
+                // Optionally handle missing key gracefully
+                return StatusCode(500, "JWT Key is missing in configuration.");
+            }
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(keyString));
+            var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var claims = new[]
+            {
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(ClaimTypes.Email, user.Email),
+                new Claim(ClaimTypes.Name, user.FirstName ?? "")
+            };
+
+            var token = new JwtSecurityToken(
+                issuer: issuer,
+                audience: audience,
+                claims: claims,
+                expires: DateTime.UtcNow.AddHours(2),
+                signingCredentials: credentials
+            );
+
+            var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
+
+            return Ok(new
+            {
+                token = tokenString,
+                message = $"{request.Email} logged in!"
+            });
+        }
+
+        [Authorize]
+        [HttpPut]
+        [Route("UpdateUserById/{id}")]
+        public async Task<IActionResult> UpdateUserAsync(Guid id, [FromBody] UpdatedUserInfoFields request)
+        {
+            if (id != request.Id)
+            {
+                return BadRequest("ID in URL does not match ID in request body.");
+            }
+
+            bool updateResult = await _userService.UpdateUserAsync(id, request);
+
+            if (!updateResult)
+            {
+                return NotFound("User not found or update failed.");
+            }
+
+            return Ok("User updated successfully.");
         }
     }
 }

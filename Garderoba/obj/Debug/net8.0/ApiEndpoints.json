@@ -46,5 +46,26 @@
       }
     ],
     "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Garderoba.WebApi.Controllers.UserController",
+    "Method": "UpdateUserAsync",
+    "RelativePath": "User/UpdateUserById/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Guid",
+        "IsRequired": true
+      },
+      {
+        "Name": "request",
+        "Type": "Garderoba.WebApi.ViewModel.UpdatedUserInfoFields",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
   }
 ]

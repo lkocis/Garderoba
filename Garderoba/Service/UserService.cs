@@ -1,6 +1,7 @@
 ﻿using Garderoba.Model;
 using Garderoba.Repository.Common;
 using Garderoba.Service.Common;
+using Garderoba.WebApi.ViewModel;
 
 namespace Garderoba.Service
 {
@@ -15,9 +16,9 @@ namespace Garderoba.Service
         {
             return await _userRepository.CreateUserAsync(newUser);
         }
-        public async Task<bool> UpdateUserAsync(User newUser)
+        public async Task<bool> UpdateUserAsync(Guid id, UpdatedUserInfoFields updatedUser)
         {
-            return await _userRepository.UpdateUserAsync(newUser);
+            return await _userRepository.UpdateUserAsync(id, updatedUser);
         }
         public async Task<User?> ReadUserAsync(Guid id)
         {

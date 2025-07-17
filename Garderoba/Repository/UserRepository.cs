@@ -1,6 +1,6 @@
 ﻿using Garderoba.Model;
 using Garderoba.Repository.Common;
-using Microsoft.AspNetCore.Mvc.ModelBinding.Binders;
+using Garderoba.WebApi.ViewModel;
 using Npgsql;
 
 namespace Garderoba.Repository
@@ -26,7 +26,11 @@ namespace Garderoba.Repository
                     exists = await reader.ReadAsync();
                 }
 
-                string hashedPassword = BCrypt.Net.BCrypt.HashPassword(user.Password);
+                if (exists)
+                {
+                    Console.WriteLine("User with this email already exists.");
+                    return false;
+                }
 
                 var commandText = @"
                 INSERT INTO ""User"" (
@@ -54,7 +58,7 @@ namespace Garderoba.Repository
                 using var insertCommand = new NpgsqlCommand(commandText, connection);
 
                 insertCommand.Parameters.AddWithValue("@Email", user.Email);
-                insertCommand.Parameters.AddWithValue("@Password", hashedPassword);
+                insertCommand.Parameters.AddWithValue("@Password", user.Password);
                 insertCommand.Parameters.AddWithValue("@FirstName", user.FirstName ?? (object)DBNull.Value);
                 insertCommand.Parameters.AddWithValue("@LastName", user.LastName ?? (object)DBNull.Value);
                 insertCommand.Parameters.AddWithValue("@PhoneNumber", user.PhoneNumber ?? (object)DBNull.Value);
@@ -112,15 +116,78 @@ namespace Garderoba.Repository
             }
         }
 
-        public async Task<bool> UpdateUserAsync(User user)
+        public async Task<bool> UpdateUserAsync(Guid id, UpdatedUserInfoFields updatedUser)
         {
             try
             {
                 using var connection = new NpgsqlConnection(_connectionString);
-                return true;
+                await connection.OpenAsync();
+
+                User existingUser = null;
+                using (var getUserCmd = new NpgsqlCommand("SELECT * FROM \"User\" WHERE \"Id\" = @Id", connection))
+                {
+                    getUserCmd.Parameters.AddWithValue("@Id", id);
+
+                    using var reader = await getUserCmd.ExecuteReaderAsync();
+                    if (await reader.ReadAsync())
+                    {
+                        existingUser = new User
+                        {
+                            Id = Guid.Parse(reader["Id"].ToString()),
+                            Email = reader["Email"]?.ToString(),
+                            FirstName = reader["FirstName"]?.ToString(),
+                            LastName = reader["LastName"]?.ToString(),
+                            PhoneNumber = reader["PhoneNumber"]?.ToString(),
+                            Area = reader["Area"]?.ToString(),
+                            KUDName = reader["KUDName"]?.ToString()
+                        };
+                    }
+                    else
+                    {
+                        Console.WriteLine("User not found.");
+                        return false;
+                    }
+                } 
+
+                existingUser.Email = updatedUser.Email ?? existingUser.Email;
+                existingUser.FirstName = updatedUser.FirstName ?? existingUser.FirstName;
+                existingUser.LastName = updatedUser.LastName ?? existingUser.LastName;
+                existingUser.PhoneNumber = updatedUser.PhoneNumber ?? existingUser.PhoneNumber;
+                existingUser.Area = updatedUser.Area ?? existingUser.Area;
+                existingUser.KUDName = updatedUser.KUDName ?? existingUser.KUDName;
+
+                using var updateCmd = new NpgsqlCommand(@"
+                                                UPDATE ""User"" SET
+                                                        ""Email"" = @Email,
+                                                        ""FirstName"" = @FirstName,
+                                                        ""LastName"" = @LastName,
+                                                        ""PhoneNumber"" = @PhoneNumber,
+                                                        ""Area"" = @Area,
+                                                        ""KUDName"" = @KUDName,
+                                                        ""DateUpdated"" = @DateUpdated
+                                                WHERE ""Id"" = @Id;", connection);
+
+                updateCmd.Parameters.AddWithValue("@Email", existingUser.Email ?? (object)DBNull.Value);
+                updateCmd.Parameters.AddWithValue("@FirstName", existingUser.FirstName ?? (object)DBNull.Value);
+                updateCmd.Parameters.AddWithValue("@LastName", existingUser.LastName ?? (object)DBNull.Value);
+                updateCmd.Parameters.AddWithValue("@PhoneNumber", existingUser.PhoneNumber ?? (object)DBNull.Value);
+                updateCmd.Parameters.AddWithValue("@Area", existingUser.Area ?? (object)DBNull.Value);
+                updateCmd.Parameters.AddWithValue("@KUDName", existingUser.KUDName ?? (object)DBNull.Value);
+                updateCmd.Parameters.AddWithValue("@DateUpdated", DateTime.UtcNow);
+                updateCmd.Parameters.AddWithValue("@Id", id);
+
+                int affectedRows = await updateCmd.ExecuteNonQueryAsync();
+
+                if(affectedRows > 0)
+                {
+                    Console.WriteLine("User info fields successfully updated!");
+                }
+
+                return affectedRows > 0;
             }
-            catch
+            catch (Exception ex)
             {
+                Console.WriteLine("Error updating user: " + ex.Message);
                 return false;
             }
         }
@@ -130,10 +197,11 @@ namespace Garderoba.Repository
             try
             {
                 using var connection = new NpgsqlConnection(_connectionString);
-                string commandText = "SELECT * FROM \"User\" WHERE \"Email\" = @Email;";
+                string commandText = "SELECT * FROM \"User\" WHERE \"Email\" = @Email AND \"Password\" = @Password;";
 
                 using var command = new NpgsqlCommand(commandText, connection);
                 command.Parameters.AddWithValue("@Email", email);
+                command.Parameters.AddWithValue("@Password", password);
 
                 await connection.OpenAsync();
                 using var reader = await command.ExecuteReaderAsync();
@@ -144,18 +212,11 @@ namespace Garderoba.Repository
                     return null;
                 }
 
-                string hashedPassword = reader["Password"].ToString();
-                if (!BCrypt.Net.BCrypt.Verify(password, hashedPassword))
-                {
-                    Console.WriteLine("Wrong password!");
-                    return null;
-                }
-
                 var user = new User
                 {
                     Id = Guid.Parse(reader["Id"].ToString()),
                     Email = reader["Email"].ToString(),
-                    Password = hashedPassword,
+                    Password = reader["Password"].ToString(),
                     FirstName = reader["FirstName"].ToString(),
                     LastName = reader["LastName"].ToString(),
                     PhoneNumber = reader["PhoneNumber"].ToString(),
