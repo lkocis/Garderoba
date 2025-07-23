@@ -38,6 +38,8 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IChoreographyService, ChoreographyService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IChoreographyRepository, ChoreographyRepository>();
+builder.Services.AddScoped<ICostumePartRepository, CostumePartRepository>();
+builder.Services.AddScoped<ICostumePartService, CostumePartService>();
 builder.Services.AddHttpContextAccessor();
 
 //Add authorization

@@ -12,7 +12,7 @@ namespace Garderoba.Model
 
         public Gender Gender { get; set; } 
 
-        public bool IsAvailable { get; set; }
+        public CostumeStatus Status { get; set; }
 
         public DateTime? DateCreated { get; set; }
 
@@ -20,5 +20,7 @@ namespace Garderoba.Model
 
         public Guid CreatedByUserId { get; set; } 
         public User CreatedByUser { get; set; }
+
+        public List<CostumePart> Parts { get; set; }
     }
 }

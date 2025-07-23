@@ -1,4 +1,6 @@
-﻿namespace Garderoba.Model
+﻿using Garderoba.Common;
+
+namespace Garderoba.Model
 {
     public class CostumePart
     {
@@ -9,8 +11,8 @@
         public string Region { get; set; }
 
         public string Name { get; set; }
-
-        public string Status { get; set; }
+        public int PartNumber {  get; set; }
+        public CostumeStatus Status { get; set; }
 
         public DateTime? DateCreated { get; set; }
 

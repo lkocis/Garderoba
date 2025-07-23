@@ -63,6 +63,22 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "Garderoba.WebApi.Controllers.CostumeController",
+    "Method": "CreateCostumeAsync",
+    "RelativePath": "Costume/CreateCostume",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "Garderoba.WebApi.ViewModel.CreateCostumeWithParts",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "Garderoba.WebApi.Controllers.UserController",
     "Method": "CreateUserAsync",
     "RelativePath": "User/CreateUser",
