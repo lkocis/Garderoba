@@ -173,5 +173,58 @@ namespace Garderoba.WebApi.Controllers
                 return StatusCode(500, "Error message: " + ex.Message);
             }
         }
+
+        [Authorize]
+        [HttpGet]
+        [Route("GetAllCostumes")]
+        public async Task<ActionResult> GetAllCostumesAsync()
+        {
+            try
+            {
+                var costumes = await _costumeService.GetAllCostumesAsync();
+
+                var result = costumes.Select(c => new AllCostumes
+                {
+                    Name = c.Name,
+                    Area = c.Area,
+                    Gender = c.Gender,
+                    Status = c.Status
+                }).ToList();
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
+
+        [Authorize]
+        [HttpGet]
+        [Route("GetAllCostumeParts/{costumeId}")]
+        public async Task<ActionResult> GetAllCostumePartsAsync(Guid costumeId)
+        {
+            try
+            {
+                if (costumeId == Guid.Empty)
+                    return BadRequest("CostumeId is required.");
+
+                var costumeParts = await _costumeService.GetAllCostumePartsAsync(costumeId);
+
+                var result = costumeParts.Select(cp => new AllCostumeParts
+                {
+                    Region = cp.Region,
+                    Name = cp.Name,
+                    PartNumber = cp.PartNumber,
+                    Status = cp.Status
+                }).ToList();
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
     }
 }

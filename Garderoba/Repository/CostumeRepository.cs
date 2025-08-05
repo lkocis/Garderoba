@@ -267,5 +267,83 @@ namespace Garderoba.Repository
                 return false;
             }
         }
+
+        public async Task<List<Costume>> GetAllCostumesAsync()
+        {
+            var costumes = new List<Costume>();
+
+            try
+            {
+                using var connection = new NpgsqlConnection(_connectionString);
+                await connection.OpenAsync();
+
+                var commandText = @"SELECT * FROM ""Costume"";";
+                using var command = new NpgsqlCommand(commandText, connection);
+
+                using var reader = await command.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
+                {
+                    var costume = new Costume
+                    {
+                        Id = reader.GetGuid(reader.GetOrdinal("Id")),
+                        Name = reader["Name"] as string,
+                        Area = reader["Area"] as string,
+                        Gender = (Gender)reader.GetInt32(reader.GetOrdinal("Gender")),
+                        Status = (CostumeStatus)reader.GetInt32(reader.GetOrdinal("Status")),
+                        DateCreated = reader.GetDateTime(reader.GetOrdinal("DateCreated")),
+                        DateUpdated = reader.IsDBNull(reader.GetOrdinal("DateUpdated"))
+                            ? (DateTime?)null
+                            : reader.GetDateTime(reader.GetOrdinal("DateUpdated")),
+                        CreatedByUserId = reader.GetGuid(reader.GetOrdinal("CreatedByUserId"))
+                    };
+
+                    costumes.Add(costume);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error in fetching all costumes: " + ex.Message);
+            }
+
+            return costumes;
+        }
+
+        public async Task<List<CostumePart>> GetAllCostumePartsAsync(Guid costumeId)
+        {
+            var costumeParts = new List<CostumePart>();
+
+            try
+            {
+                using var connection = new NpgsqlConnection(_connectionString);
+                await connection.OpenAsync();
+
+                var commandText = @"SELECT * FROM ""CostumePart"" WHERE ""CostumeId"" = @CostumeId;";
+                using var command = new NpgsqlCommand(commandText, connection);
+                command.Parameters.AddWithValue("@CostumeId", costumeId);
+
+                using var reader = await command.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
+                {
+                    var costumePart = new CostumePart
+                    {
+                        Id = reader.GetGuid(reader.GetOrdinal("Id")),
+                        CostumeId = reader.GetGuid(reader.GetOrdinal("CostumeId")),
+                        Region = reader["Region"] as string,
+                        Name = reader["Name"] as string,
+                        PartNumber = reader.GetInt32(reader.GetOrdinal("PartNumber")),
+                        Status = (CostumeStatus)reader.GetInt32(reader.GetOrdinal("Status")),
+                        DateCreated = reader.GetDateTime(reader.GetOrdinal("DateCreated")),
+                    };
+
+                    costumeParts.Add(costumePart);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error in fetching all costume parts: " + ex.Message);
+            }
+
+            return costumeParts;
+        }
     }
 }

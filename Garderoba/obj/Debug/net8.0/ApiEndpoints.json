@@ -134,7 +134,7 @@
   {
     "ContainingType": "Garderoba.WebApi.Controllers.CostumeController",
     "Method": "DeleteCostumeWithPartsAsync",
-    "RelativePath": "Costume/DeleteCostumeWithParts/{id}",
+    "RelativePath": "Costume/DeleteCostumeWithParts/{costumeId}",
     "HttpMethod": "DELETE",
     "IsController": true,
     "Order": 0,
@@ -142,14 +142,35 @@
       {
         "Name": "costumeId",
         "Type": "System.Guid",
-        "IsRequired": false
-      },
-      {
-        "Name": "id",
-        "Type": "",
         "IsRequired": true
       }
     ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Garderoba.WebApi.Controllers.CostumeController",
+    "Method": "GetAllCostumePartsAsync",
+    "RelativePath": "Costume/GetAllCostumeParts/{costumeId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "costumeId",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Garderoba.WebApi.Controllers.CostumeController",
+    "Method": "GetAllCostumesAsync",
+    "RelativePath": "Costume/GetAllCostumes",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
     "ReturnTypes": []
   },
   {
