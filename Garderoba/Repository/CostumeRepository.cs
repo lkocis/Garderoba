@@ -3,6 +3,7 @@ using Garderoba.Model;
 using Garderoba.Repository.Common;
 using Garderoba.WebApi.ViewModel;
 using Npgsql;
+using System.Transactions;
 
 namespace Garderoba.Repository
 {
@@ -173,6 +174,98 @@ namespace Garderoba.Repository
             }
         }
 
+        public async Task<bool> AddCostumePartAsync(Guid costumeId, CostumePart newPart)
+        {
+            try
+            {
+                using var connection = new NpgsqlConnection(_connectionString);
+                await connection.OpenAsync();
 
+                var insertPartText = @"INSERT INTO ""CostumePart"" (
+                                    ""CostumeId"",
+                                    ""Region"",
+                                    ""Name"",
+                                    ""PartNumber"",
+                                    ""Status"",
+                                    ""DateCreated"")
+                               VALUES (
+                                    @CostumeId,
+                                    @Region,
+                                    @Name,
+                                    @PartNumber,
+                                    @Status,
+                                    @DateCreated);";
+
+                using var insertPartCmd = new NpgsqlCommand(insertPartText, connection);
+
+                insertPartCmd.Parameters.AddWithValue("@CostumeId", costumeId);
+                insertPartCmd.Parameters.AddWithValue("@Region", newPart.Region ?? (object)DBNull.Value);
+                insertPartCmd.Parameters.AddWithValue("@Name", newPart.Name ?? (object)DBNull.Value);
+                insertPartCmd.Parameters.AddWithValue("@PartNumber", newPart.PartNumber);
+                insertPartCmd.Parameters.AddWithValue("@Status", (int)newPart.Status);
+                insertPartCmd.Parameters.AddWithValue("@DateCreated", DateTime.UtcNow);
+
+                int affectedRows = await insertPartCmd.ExecuteNonQueryAsync();
+
+                return affectedRows > 0;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error adding costume part: " + ex.Message);
+                return false;
+            }
+        }
+
+        public async Task<bool> DeleteCostumePartAsync(Guid id)
+        {
+            try
+            {
+                using var connection = new NpgsqlConnection(_connectionString);
+                await connection.OpenAsync();
+
+                var deleteQuery = @"DELETE FROM ""CostumePart"" WHERE ""Id"" = @Id";
+
+                using var deleteCmd = new NpgsqlCommand(deleteQuery, connection);
+                deleteCmd.Parameters.AddWithValue("@Id", id);
+
+                int affectedRows = await deleteCmd.ExecuteNonQueryAsync();
+
+                return affectedRows > 0;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error deleting costume part: " + ex.Message);
+                return false;
+            }
+        }
+
+        public async Task<bool> DeleteCostumeWithPartsAsync(Guid costumeId)
+        {
+            using var connection = new NpgsqlConnection(_connectionString);
+            await connection.OpenAsync();
+
+            await using var transaction = await connection.BeginTransactionAsync();
+
+            try
+            {
+                var deletePartsCmd = new NpgsqlCommand(@"DELETE FROM ""CostumePart"" WHERE ""CostumeId"" = @CostumeId", connection);
+                deletePartsCmd.Parameters.AddWithValue("@CostumeId", costumeId);
+                deletePartsCmd.Transaction = transaction;
+                await deletePartsCmd.ExecuteNonQueryAsync();
+
+                var deleteCostumeCmd = new NpgsqlCommand(@"DELETE FROM ""Costume"" WHERE ""Id"" = @CostumeId", connection);
+                deleteCostumeCmd.Parameters.AddWithValue("@CostumeId", costumeId);
+                deleteCostumeCmd.Transaction = transaction;
+                var affected = await deleteCostumeCmd.ExecuteNonQueryAsync();
+
+                await transaction.CommitAsync();
+                return affected > 0;
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                return false;
+            }
+        }
     }
 }

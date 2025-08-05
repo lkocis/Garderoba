@@ -64,6 +64,27 @@
   },
   {
     "ContainingType": "Garderoba.WebApi.Controllers.CostumeController",
+    "Method": "AddCostumePartAsync",
+    "RelativePath": "Costume/AddCostumePart/{costumeId}",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "costumeId",
+        "Type": "System.Guid",
+        "IsRequired": true
+      },
+      {
+        "Name": "newPartVm",
+        "Type": "Garderoba.WebApi.ViewModel.CostumePartCreation",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Garderoba.WebApi.Controllers.CostumeController",
     "Method": "CreateCostumeAsync",
     "RelativePath": "Costume/CreateCostume",
     "HttpMethod": "POST",
@@ -73,6 +94,59 @@
       {
         "Name": "model",
         "Type": "Garderoba.WebApi.ViewModel.CreateCostumeWithParts",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Garderoba.WebApi.Controllers.CostumeController",
+    "Method": "DeleteCostumeAsync",
+    "RelativePath": "Costume/DeleteCostume/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Garderoba.WebApi.Controllers.CostumeController",
+    "Method": "DeleteCostumePartAsync",
+    "RelativePath": "Costume/DeleteCostumePart/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Garderoba.WebApi.Controllers.CostumeController",
+    "Method": "DeleteCostumeWithPartsAsync",
+    "RelativePath": "Costume/DeleteCostumeWithParts/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "costumeId",
+        "Type": "System.Guid",
+        "IsRequired": false
+      },
+      {
+        "Name": "id",
+        "Type": "",
         "IsRequired": true
       }
     ],

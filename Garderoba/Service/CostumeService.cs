@@ -36,6 +36,21 @@ namespace Garderoba.Service
         {
             return await _costumeRepository.UpdateCostumePartAsync(id, updatedFields);
         }
+
+        public async Task<bool> AddCostumePartAsync(Guid costumeId, CostumePart newPart)
+        {
+            return await _costumeRepository.AddCostumePartAsync(costumeId, newPart);   
+        }
+
+        public async Task<bool> DeleteCostumePartAsync(Guid id)
+        {
+            return await _costumeRepository.DeleteCostumePartAsync(id);
+        }
+
+        public async Task<bool> DeleteCostumeWithPartsAsync(Guid costumeId)
+        {
+            return await _costumeRepository.DeleteCostumeWithPartsAsync(costumeId);
+        }
     }
 
 }

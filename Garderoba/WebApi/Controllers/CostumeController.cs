@@ -38,7 +38,7 @@ namespace Garderoba.WebApi.Controllers
                         Region = p.Region,
                         Name = p.Name,
                         PartNumber = p.PartNumber,
-                        Status = p.Status,  
+                        Status = p.Status,
                     }).ToList()
                 };
 
@@ -78,6 +78,99 @@ namespace Garderoba.WebApi.Controllers
             catch (Exception ex)
             {
                 return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
+
+        [Authorize]
+        [HttpPost]
+        [Route("AddCostumePart/{costumeId}")]
+        public async Task<ActionResult> AddCostumePartAsync(Guid costumeId, [FromBody] CostumePartCreation newPartVm)
+        {
+            try
+            {
+                var costumePart = new CostumePart
+                {
+                    CostumeId = costumeId,
+                    Region = newPartVm.Region,
+                    Name = newPartVm.Name,
+                    PartNumber = newPartVm.PartNumber,
+                    Status = newPartVm.Status,
+                    DateCreated = DateTime.UtcNow
+                };
+
+                var result = await _costumeService.AddCostumePartAsync(costumeId, costumePart);
+
+                if (!result)
+                    return BadRequest("Failed to add costume part.");
+
+                return Ok("Costume part added successfully.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error adding costume part: {ex.Message}");
+                return StatusCode(500, "Server error occurred while adding costume part.");
+            }
+        }
+
+        [Authorize]
+        [HttpDelete]
+        [Route("DeleteCostumePart/{id}")]
+        public async Task<ActionResult> DeleteCostumePartAsync(Guid id)
+        {
+            try
+            {
+                var success = await _costumeService.DeleteCostumePartAsync(id);
+
+                if (!success)
+                {
+                    return NotFound(new { message = "Costume part not found." });
+                }
+
+                return Ok(new { message = "Costume part deleted successfully." });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while deleting the costume part.", details = ex.Message });
+            }
+        }
+
+        [Authorize]
+        [HttpDelete]
+        [Route("DeleteCostume/{id}")]
+        public async Task<ActionResult> DeleteCostumeAsync(Guid id)
+        {
+            try
+            {
+                var success = await _costumeService.DeleteCostumeWithPartsAsync(id);
+
+                if (!success)
+                    return NotFound(new { message = "Costume not found or could not be deleted." });
+
+                return Ok(new { message = "Costume and its parts deleted successfully." });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while deleting the costume.", details = ex.Message });
+            }
+        }
+
+        [Authorize]
+        [HttpDelete]
+        [Route("DeleteCostumeWithParts/{costumeId}")]
+        public async Task<ActionResult> DeleteCostumeWithPartsAsync(Guid costumeId)
+        {
+            try
+            {
+                var success = await _costumeService.DeleteCostumeWithPartsAsync(costumeId);
+
+                if (success)
+                    return Ok("Costume and its parts are deleted.");
+                else
+                    return NotFound("Costume not found or costume not deleted.");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Error message: " + ex.Message);
             }
         }
     }

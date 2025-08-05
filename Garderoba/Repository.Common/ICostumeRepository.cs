@@ -7,5 +7,8 @@ namespace Garderoba.Repository.Common
     {
         Task<bool> CreateNewCostumeAsync(Costume costume);
         Task<bool> UpdateCostumePartAsync(Guid id, UpdatedCostumePartFields updatedFields);
+        Task<bool> AddCostumePartAsync(Guid costumeId, CostumePart newPart);
+        Task<bool> DeleteCostumePartAsync(Guid id);
+        Task<bool> DeleteCostumeWithPartsAsync(Guid costumeId);
     }
 }
