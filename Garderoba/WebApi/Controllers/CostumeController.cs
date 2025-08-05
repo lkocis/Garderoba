@@ -32,16 +32,15 @@ namespace Garderoba.WebApi.Controllers
                     Area = model.Area,
                     Gender = model.Gender,
                     Status = model.Status,
-                    DateCreated = DateTime.UtcNow
+                    DateCreated = DateTime.UtcNow,
+                    Parts = model.Parts.Select(p => new CostumePart
+                    {
+                        Region = p.Region,
+                        Name = p.Name,
+                        PartNumber = p.PartNumber,
+                        Status = p.Status,  
+                    }).ToList()
                 };
-
-                var costumePart = model.Parts.Select(p => new CostumePart
-                {
-                    Region = p.Region,
-                    Name = p.Name,
-                    PartNumber = p.PartNumber,
-                    DateCreated = DateTime.UtcNow
-                }).ToList();
 
                 bool success = await _costumeService.CreateNewCostumeAsync(costume);
 
@@ -57,6 +56,28 @@ namespace Garderoba.WebApi.Controllers
             catch (Exception ex)
             {
                 return StatusCode(500, $"Internal Server Error: {ex.Message}");
+            }
+        }
+
+        [Authorize]
+        [HttpPost]
+        [Route("UpdateCostumePart/{id}")]
+        public async Task<ActionResult> UpdateCostumePartAsync(Guid id, [FromBody] UpdatedCostumePartFields updatedFields)
+        {
+            try
+            {
+                bool result = await _costumeService.UpdateCostumePartAsync(id, updatedFields);
+
+                if (!result)
+                {
+                    return NotFound("Costume part not found or update failed.");
+                }
+
+                return Ok("Costume part updated successfully.");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
             }
         }
     }

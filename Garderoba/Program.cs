@@ -5,6 +5,7 @@ using Garderoba.Service;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,16 +31,23 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-// Add services to the container.
+//Enum converter
+builder.Services.AddControllers().AddJsonOptions(opts =>
+{
+    opts.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+});
 
+// Add services to the container.
 builder.Services.AddControllers();
 
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IChoreographyService, ChoreographyService>();
+builder.Services.AddScoped<ICostumeService, CostumeService>();
+
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IChoreographyRepository, ChoreographyRepository>();
-builder.Services.AddScoped<ICostumePartRepository, CostumePartRepository>();
-builder.Services.AddScoped<ICostumePartService, CostumePartService>();
+builder.Services.AddScoped<ICostumeRepository, CostumeRepository>();
+
 builder.Services.AddHttpContextAccessor();
 
 //Add authorization
