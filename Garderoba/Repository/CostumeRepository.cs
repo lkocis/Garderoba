@@ -4,6 +4,7 @@ using Garderoba.Repository.Common;
 using Garderoba.WebApi.ViewModel;
 using Npgsql;
 using System.Transactions;
+using System.Xml.Linq;
 
 namespace Garderoba.Repository
 {
@@ -370,6 +371,41 @@ namespace Garderoba.Repository
             }
 
             return costumeParts;
+        }
+
+        public async Task<CostumePart?> GetCostumePartByIdAsync(Guid partId)
+        {
+            try
+            {
+                using var connection = new NpgsqlConnection(_connectionString);
+
+                const string commandText = "SELECT * FROM \"CostumePart\" WHERE \"Id\" = @Id;";
+                using var command = new NpgsqlCommand(commandText, connection);
+                command.Parameters.AddWithValue("@Id", NpgsqlTypes.NpgsqlDbType.Uuid, partId);
+
+                await connection.OpenAsync();
+                using var reader = await command.ExecuteReaderAsync();
+
+                if (await reader.ReadAsync())
+                {
+                    return new CostumePart
+                    {
+                        Id = reader.GetGuid(reader.GetOrdinal("Id")),
+                        CostumeId = reader.GetGuid(reader.GetOrdinal("CostumeId")),
+                        Region = reader["Region"] as string,
+                        Name = reader["Name"] as string,
+                        PartNumber = reader.GetInt32(reader.GetOrdinal("PartNumber")),
+                        Status = (CostumeStatus)reader.GetInt32(reader.GetOrdinal("Status")),
+                        DateCreated = reader.GetDateTime(reader.GetOrdinal("DateCreated"))
+                    };
+                }
+
+                return null;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Failed to retrieve costume part by ID: " + ex.Message, ex);
+            }
         }
     }
 }

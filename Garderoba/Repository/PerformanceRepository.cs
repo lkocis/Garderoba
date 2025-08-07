@@ -150,7 +150,7 @@ namespace Garderoba.Repository
                 var query = @"
                         SELECT cp.""Name"", cp.""PartNumber""
                         FROM ""CostumePart"" cp
-                        WHERE cp.""CostumeId"" = @CostumeId;"; // uklonjen gender filter, provjerava sve dijelove za kostim
+                        WHERE cp.""CostumeId"" = @CostumeId;"; 
 
                 using var command = new NpgsqlCommand(query, connection);
                 command.Parameters.AddWithValue("@CostumeId", costumeId);
@@ -169,12 +169,12 @@ namespace Garderoba.Repository
                 {
                     if (!partCounts.ContainsKey(necessaryPart))
                     {
-                        missingParts.Add($"{(gender == 0 ? "Muški" : "Ženski")} - {necessaryPart} (nedostaje svih {costumeCount})");
+                        missingParts.Add($"{(gender == 0 ? "Men" : "Women")} - {necessaryPart} (missing all {costumeCount} costumes)");
                     }
                     else if (partCounts[necessaryPart] < costumeCount)
                     {
                         int missingCount = costumeCount - partCounts[necessaryPart];
-                        missingParts.Add($"{(gender == 0 ? "Muški" : "Ženski")} - {necessaryPart} (nedostaje još {missingCount})");
+                        missingParts.Add($"{(gender == 0 ? "Men" : "Women")} - {necessaryPart} (missing {missingCount} costumes)");
                     }
                 }
             }

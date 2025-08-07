@@ -79,6 +79,22 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "Garderoba.WebApi.Controllers.ColaborativeFilteringController",
+    "Method": "FindUserWithCostumeParts",
+    "RelativePath": "ColaborativeFiltering/GetUserWithCostumeParts/{choreographyId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "choreographyId",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "Garderoba.WebApi.Controllers.CostumeController",
     "Method": "AddCostumePartAsync",
     "RelativePath": "Costume/AddCostumePart/{costumeId}",

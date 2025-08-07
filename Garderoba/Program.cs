@@ -44,11 +44,13 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IChoreographyService, ChoreographyService>();
 builder.Services.AddScoped<ICostumeService, CostumeService>();
 builder.Services.AddScoped<IPerformanceService, PerformanceService>();
+builder.Services.AddScoped<IColaborativeFilteringService, ColaborativeFilteringService>();
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IChoreographyRepository, ChoreographyRepository>();
 builder.Services.AddScoped<ICostumeRepository, CostumeRepository>();
 builder.Services.AddScoped<IPerformanceRepository, PerformanceRepository>();
+builder.Services.AddScoped<IColaborativeFilteringRepository,  ColaborativeFilteringRepository>();
 
 builder.Services.AddHttpContextAccessor();
 
