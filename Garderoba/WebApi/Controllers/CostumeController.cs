@@ -32,25 +32,28 @@ namespace Garderoba.WebApi.Controllers
                     Area = model.Area,
                     Gender = model.Gender,
                     Status = model.Status,
+                    NecessaryParts = model.NecessaryParts,
                     DateCreated = DateTime.UtcNow,
-                    Parts = model.Parts.Select(p => new CostumePart
+                    Parts = model.Parts?.Select(p => new CostumePart
                     {
                         Region = p.Region,
                         Name = p.Name,
                         PartNumber = p.PartNumber,
                         Status = p.Status,
+                        Gender = p.Gender,
+                        DateCreated = DateTime.UtcNow
                     }).ToList()
                 };
 
-                bool success = await _costumeService.CreateNewCostumeAsync(costume);
+                bool success = await _costumeService.CreateNewCostumeAsync(costume, model.ChoreographyId);
 
                 if (success)
                 {
-                    return StatusCode(201, $"Costume part created!");
+                    return StatusCode(201, "Costume created successfully!");
                 }
                 else
                 {
-                    return BadRequest("Costume part creation failed.");
+                    return BadRequest("Costume creation failed.");
                 }
             }
             catch (Exception ex)

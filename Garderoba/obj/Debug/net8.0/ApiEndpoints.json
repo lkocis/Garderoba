@@ -43,6 +43,22 @@
   },
   {
     "ContainingType": "Garderoba.WebApi.Controllers.ChoreographyController",
+    "Method": "GetChoreographyByIdAsync",
+    "RelativePath": "Choreography/GetChoreographyById/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Garderoba.WebApi.Controllers.ChoreographyController",
     "Method": "UpdateChoreographyByIdAsync",
     "RelativePath": "Choreography/UpdateChoreographyById/{id}",
     "HttpMethod": "PUT",
@@ -189,6 +205,22 @@
       {
         "Name": "updatedFields",
         "Type": "Garderoba.WebApi.ViewModel.UpdatedCostumePartFields",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Garderoba.WebApi.Controllers.PerformanceController",
+    "Method": "CheckCostumePartsAvailability",
+    "RelativePath": "Performance/GetMaleCostumeChoreographyCheck/{choreographyId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "choreographyId",
+        "Type": "System.Guid",
         "IsRequired": true
       }
     ],

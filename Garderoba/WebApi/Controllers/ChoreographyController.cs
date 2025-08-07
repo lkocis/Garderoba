@@ -121,5 +121,27 @@ namespace Garderoba.WebApi.Controllers
                 return StatusCode(500, $"An error occurred: {ex.Message}");
             }
         }
+
+        [Authorize]
+        [HttpGet]
+        [Route("GetChoreographyById/{id}")]
+        public async Task<ActionResult> GetChoreographyByIdAsync(Guid id)
+        {
+            try
+            {
+                var choreography = await _choreographyService.GetChoreographyByIdAsync(id);
+
+                if (choreography == null)
+                {
+                    return NotFound($"Choreography with id {id} not found.");
+                }
+
+                return Ok(choreography);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
     }
 }

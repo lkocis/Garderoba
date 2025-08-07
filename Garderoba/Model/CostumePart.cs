@@ -12,6 +12,7 @@ namespace Garderoba.Model
 
         public string Name { get; set; }
         public int PartNumber {  get; set; }
+        public Gender Gender { get; set; }
         public CostumeStatus Status { get; set; }
 
         public DateTime? DateCreated { get; set; }

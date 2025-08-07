@@ -18,7 +18,7 @@ namespace Garderoba.Service
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public async Task<bool> CreateNewCostumeAsync(Costume costume)
+        public async Task<bool> CreateNewCostumeAsync(Costume costume, Guid? choreographyId)
         {
             var userIdString = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
@@ -29,7 +29,7 @@ namespace Garderoba.Service
             }
 
             costume.CreatedByUserId = userId;
-            return await _costumeRepository.CreateNewCostumeAsync(costume);
+            return await _costumeRepository.CreateNewCostumeAsync(costume, choreographyId);
         }
 
         public async Task<bool> UpdateCostumePartAsync(Guid id, UpdatedCostumePartFields updatedFields)

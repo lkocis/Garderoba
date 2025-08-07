@@ -1,4 +1,5 @@
-﻿using Garderoba.Model;
+﻿using Garderoba.Common;
+using Garderoba.Model;
 using Garderoba.Repository.Common;
 using Garderoba.WebApi.ViewModel;
 using Npgsql;
@@ -202,6 +203,106 @@ namespace Garderoba.Repository
                 Console.WriteLine("Error updating choreography: " + ex.Message);
                 return false;
             }
+        }
+
+        public async Task<Choreography> GetChoreographyByIdAsync(Guid id)
+        {
+            Choreography choreography = null;
+            var costumesDict = new Dictionary<Guid, Costume>();
+
+            using var connection = new NpgsqlConnection(_connectionString);
+            await connection.OpenAsync();
+
+            var commandText = @"
+                            SELECT 
+                                c.""Id"" as ""ChoreographyId"", c.""Name"" as ""ChoreographyName"", c.""Area"", 
+                                c.""MenCostumeCount"", c.""WomenCostumeCount"", c.""DateCreated"", c.""DateUpdated"",
+                                c.""CreatedByUserId"",
+
+                                co.""Id"" as ""CostumeId"", co.""Name"" as ""CostumeName"", co.""Area"" as ""CostumeArea"",
+                                co.""Gender"", co.""Status"", co.""DateCreated"" as ""CostumeDateCreated"", co.""DateUpdated"" as ""CostumeDateUpdated"",
+                                co.""CreatedByUserId"" as ""CostumeCreatedByUserId"",
+
+                                cp.""Id"" as ""CostumePartId"", cp.""Region"", cp.""Name"" as ""CostumePartName"", cp.""PartNumber"", cp.""Status"" as ""CostumePartStatus"", cp.""DateCreated"" as ""CostumePartDateCreated""
+
+                            FROM ""Choreography"" c
+                            LEFT JOIN ""ChoreographyCostume"" cc ON c.""Id"" = cc.""ChoreographyId""
+                            LEFT JOIN ""Costume"" co ON cc.""CostumeId"" = co.""Id""
+                            LEFT JOIN ""CostumePart"" cp ON co.""Id"" = cp.""CostumeId""
+                            WHERE c.""Id"" = @id;";
+
+            using var command = new NpgsqlCommand(commandText, connection);
+            command.Parameters.AddWithValue("@id", id);
+
+            using var reader = await command.ExecuteReaderAsync();
+
+            while (await reader.ReadAsync())
+            {
+                if (choreography == null)
+                {
+                    choreography = new Choreography
+                    {
+                        Id = reader.GetGuid(reader.GetOrdinal("ChoreographyId")),
+                        Name = reader["ChoreographyName"].ToString(),
+                        Area = reader["Area"].ToString(),
+                        MenCostumeCount = reader.GetInt32(reader.GetOrdinal("MenCostumeCount")),
+                        WomenCostumeCount = reader.GetInt32(reader.GetOrdinal("WomenCostumeCount")),
+                        DateCreated = reader.IsDBNull(reader.GetOrdinal("DateCreated")) ? null : reader.GetDateTime(reader.GetOrdinal("DateCreated")),
+                        DateUpdated = reader.IsDBNull(reader.GetOrdinal("DateUpdated")) ? null : reader.GetDateTime(reader.GetOrdinal("DateUpdated")),
+                        CreatedByUserId = reader.GetGuid(reader.GetOrdinal("CreatedByUserId")),
+                        ChoreographyCostumes = new List<ChoreographyCostume>()
+                    };
+                }
+
+                if (!reader.IsDBNull(reader.GetOrdinal("CostumeId")))
+                {
+                    var costumeId = reader.GetGuid(reader.GetOrdinal("CostumeId"));
+                    if (!costumesDict.TryGetValue(costumeId, out var costume))
+                    {
+                        costume = new Costume
+                        {
+                            Id = costumeId,
+                            Name = reader["CostumeName"].ToString(),
+                            Area = reader["CostumeArea"].ToString(),
+                            Gender = (Gender)reader.GetInt32(reader.GetOrdinal("Gender")),
+                            Status = (CostumeStatus)reader.GetInt32(reader.GetOrdinal("Status")),
+                            DateCreated = reader.IsDBNull(reader.GetOrdinal("CostumeDateCreated")) ? null : reader.GetDateTime(reader.GetOrdinal("CostumeDateCreated")),
+                            DateUpdated = reader.IsDBNull(reader.GetOrdinal("CostumeDateUpdated")) ? null : reader.GetDateTime(reader.GetOrdinal("CostumeDateUpdated")),
+                            CreatedByUserId = reader.GetGuid(reader.GetOrdinal("CostumeCreatedByUserId")),
+                            Parts = new List<CostumePart>(),
+                            ChoreographyCostumes = new List<ChoreographyCostume>()
+                        };
+
+                        costumesDict.Add(costumeId, costume);
+
+                        choreography.ChoreographyCostumes.Add(new ChoreographyCostume
+                        {
+                            ChoreographyId = choreography.Id,
+                            CostumeId = costume.Id,
+                            Costume = costume,
+                            Choreography = choreography
+                        });
+                    }
+
+                    if (!reader.IsDBNull(reader.GetOrdinal("CostumePartId")))
+                    {
+                        var part = new CostumePart
+                        {
+                            Id = reader.GetGuid(reader.GetOrdinal("CostumePartId")),
+                            CostumeId = costumeId,
+                            Region = reader["Region"].ToString(),
+                            Name = reader["CostumePartName"].ToString(),
+                            PartNumber = reader.GetInt32(reader.GetOrdinal("PartNumber")),
+                            Status = (CostumeStatus)reader.GetInt32(reader.GetOrdinal("CostumePartStatus")),
+                            DateCreated = reader.IsDBNull(reader.GetOrdinal("CostumePartDateCreated")) ? null : reader.GetDateTime(reader.GetOrdinal("CostumePartDateCreated"))
+                        };
+
+                        costume.Parts.Add(part);
+                    }
+                }
+            }
+
+            return choreography;
         }
     }
 }

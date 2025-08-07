@@ -5,7 +5,7 @@ namespace Garderoba.Repository.Common
 {
     public interface ICostumeRepository
     {
-        Task<bool> CreateNewCostumeAsync(Costume costume);
+        Task<bool> CreateNewCostumeAsync(Costume costume, Guid? choreographyId);
         Task<bool> UpdateCostumePartAsync(Guid id, UpdatedCostumePartFields updatedFields);
         Task<bool> AddCostumePartAsync(Guid costumeId, CostumePart newPart);
         Task<bool> DeleteCostumePartAsync(Guid id);

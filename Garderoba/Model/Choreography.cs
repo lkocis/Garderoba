@@ -19,5 +19,6 @@
         public Guid CreatedByUserId { get; set; } 
 
         public User CreatedByUser { get; set; }
+        public List<ChoreographyCostume> ChoreographyCostumes { get; set; }
     }
 }

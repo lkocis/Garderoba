@@ -13,6 +13,7 @@ namespace Garderoba.Model
         public Gender Gender { get; set; } 
 
         public CostumeStatus Status { get; set; }
+        public string NecessaryParts { get; set; }
 
         public DateTime? DateCreated { get; set; }
 
@@ -22,5 +23,6 @@ namespace Garderoba.Model
         public User CreatedByUser { get; set; }
 
         public List<CostumePart> Parts { get; set; }
+        public List<ChoreographyCostume> ChoreographyCostumes { get; set; }
     }
 }

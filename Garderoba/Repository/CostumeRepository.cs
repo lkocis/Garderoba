@@ -11,7 +11,7 @@ namespace Garderoba.Repository
     {
         private const string _connectionString = "Host=localhost;Port=5433;Username=postgres;Password=PeLana2606;Database=Garderoba";
 
-        public async Task<bool> CreateNewCostumeAsync(Costume costume)
+        public async Task<bool> CreateNewCostumeAsync(Costume costume, Guid? choreographyId)
         {
             try
             {
@@ -37,20 +37,22 @@ namespace Garderoba.Repository
                 var now = DateTime.UtcNow;
 
                 var insertCostumeText = @"INSERT INTO ""Costume"" (
-                                        ""Name"", 
-                                        ""Area"", 
-                                        ""Gender"", 
-                                        ""Status"", 
-                                        ""DateCreated"", 
-                                        ""CreatedByUserId"")
-                                    VALUES (
-                                        @Name, 
-                                        @Area, 
-                                        @Gender, 
-                                        @Status, 
-                                        @DateCreated, 
-                                        @CreatedByUserId)
-                                    RETURNING ""Id"";";
+                                ""Name"", 
+                                ""Area"", 
+                                ""Gender"", 
+                                ""Status"",
+                                ""NecessaryParts"",
+                                ""DateCreated"", 
+                                ""CreatedByUserId"")
+                            VALUES (
+                                @Name, 
+                                @Area, 
+                                @Gender, 
+                                @Status, 
+                                @NecessaryParts,
+                                @DateCreated, 
+                                @CreatedByUserId)
+                            RETURNING ""Id"";";
 
                 using var insertCostumeCmd = new NpgsqlCommand(insertCostumeText, connection);
 
@@ -58,29 +60,45 @@ namespace Garderoba.Repository
                 insertCostumeCmd.Parameters.AddWithValue("@Area", costume.Area ?? (object)DBNull.Value);
                 insertCostumeCmd.Parameters.AddWithValue("@Gender", (int)costume.Gender);
                 insertCostumeCmd.Parameters.AddWithValue("@Status", (int)costume.Status);
+                insertCostumeCmd.Parameters.AddWithValue("@NecessaryParts", costume.NecessaryParts ?? (object)DBNull.Value);
                 insertCostumeCmd.Parameters.AddWithValue("@DateCreated", now);
                 insertCostumeCmd.Parameters.AddWithValue("@CreatedByUserId", costume.CreatedByUserId);
 
                 var costumeId = (Guid)await insertCostumeCmd.ExecuteScalarAsync();
+
+                var insertChoreoCostumeText = @"INSERT INTO ""ChoreographyCostume"" (
+                                        ""ChoreographyId"",
+                                        ""CostumeId"")
+                                    VALUES (
+                                        @ChoreographyId,
+                                        @CostumeId);";
+
+                using var insertChoreoCostumeCmd = new NpgsqlCommand(insertChoreoCostumeText, connection);
+                insertChoreoCostumeCmd.Parameters.AddWithValue("@ChoreographyId", choreographyId);
+                insertChoreoCostumeCmd.Parameters.AddWithValue("@CostumeId", costumeId);
+
+                await insertChoreoCostumeCmd.ExecuteNonQueryAsync();
 
                 if (costume.Parts != null && costume.Parts.Count > 0)
                 {
                     foreach (var part in costume.Parts)
                     {
                         var insertPartText = @"INSERT INTO ""CostumePart"" (
-                                            ""CostumeId"", 
-                                            ""Region"", 
-                                            ""Name"", 
-                                            ""PartNumber"", 
-                                            ""Status"", 
-                                            ""DateCreated"")
-                                        VALUES (
-                                            @CostumeId, 
-                                            @Region, 
-                                            @Name, 
-                                            @PartNumber, 
-                                            @Status, 
-                                            @DateCreated);";
+                                    ""CostumeId"", 
+                                    ""Region"", 
+                                    ""Name"", 
+                                    ""PartNumber"", 
+                                    ""Status"", 
+                                    ""Gender"",
+                                    ""DateCreated"")
+                                VALUES (
+                                    @CostumeId, 
+                                    @Region, 
+                                    @Name, 
+                                    @PartNumber, 
+                                    @Status, 
+                                    @Gender,
+                                    @DateCreated);";
 
                         using var insertPartCmd = new NpgsqlCommand(insertPartText, connection);
                         insertPartCmd.Parameters.AddWithValue("@CostumeId", costumeId);
@@ -88,13 +106,14 @@ namespace Garderoba.Repository
                         insertPartCmd.Parameters.AddWithValue("@Name", part.Name ?? (object)DBNull.Value);
                         insertPartCmd.Parameters.AddWithValue("@PartNumber", part.PartNumber);
                         insertPartCmd.Parameters.AddWithValue("@Status", (int)part.Status);
+                        insertPartCmd.Parameters.AddWithValue("@Gender", (int)part.Gender);
                         insertPartCmd.Parameters.AddWithValue("@DateCreated", now);
 
                         await insertPartCmd.ExecuteNonQueryAsync();
                     }
                 }
 
-                Console.WriteLine("Costume successfully created with parts.");
+                Console.WriteLine("Costume successfully created with parts and linked to choreography.");
                 return true;
             }
             catch (Exception ex)
@@ -129,6 +148,7 @@ namespace Garderoba.Repository
                             Name = reader["Name"]?.ToString(),
                             PartNumber = Convert.ToInt32(reader["PartNumber"]),
                             Status = (CostumeStatus)Convert.ToInt32(reader["Status"]),
+                            Gender = (Gender)Convert.ToInt32(reader["Gender"]),
                         };
                     }
                     else
@@ -142,20 +162,23 @@ namespace Garderoba.Repository
                 existingCostumePart.Name = updatedFields.Name ?? existingCostumePart.Name;
                 existingCostumePart.PartNumber = updatedFields.PartNumber ?? existingCostumePart.PartNumber;
                 existingCostumePart.Status = updatedFields.Status ?? existingCostumePart.Status;
+                existingCostumePart.Gender = updatedFields.Gender ?? existingCostumePart.Gender;
 
                 var updateQuery = @"
                                     UPDATE ""CostumePart"" SET
                                         ""Region"" = @Region,
                                         ""Name"" = @Name,
                                         ""PartNumber"" = @PartNumber,
-                                        ""Status"" = @Status
+                                        ""Status"" = @Status,
+                                        ""Gender"" = @Gender
                                     WHERE ""Id"" = @Id;";
 
                 using var updateCmd = new NpgsqlCommand(updateQuery, connection);
                 updateCmd.Parameters.AddWithValue("@Region", existingCostumePart.Region ?? (object)DBNull.Value);
                 updateCmd.Parameters.AddWithValue("@Name", existingCostumePart.Name ?? (object)DBNull.Value);
                 updateCmd.Parameters.AddWithValue("@PartNumber", existingCostumePart.PartNumber);
-                updateCmd.Parameters.AddWithValue("@Status", (int)existingCostumePart.Status);  
+                updateCmd.Parameters.AddWithValue("@Status", (int)existingCostumePart.Status);
+                updateCmd.Parameters.AddWithValue("@Gender", (int)existingCostumePart.Gender);
                 updateCmd.Parameters.AddWithValue("@Id", id);
 
                 int affectedRows = await updateCmd.ExecuteNonQueryAsync();
@@ -187,6 +210,7 @@ namespace Garderoba.Repository
                                     ""Name"",
                                     ""PartNumber"",
                                     ""Status"",
+                                    ""Gender"",
                                     ""DateCreated"")
                                VALUES (
                                     @CostumeId,
@@ -194,6 +218,7 @@ namespace Garderoba.Repository
                                     @Name,
                                     @PartNumber,
                                     @Status,
+                                    @Gender,
                                     @DateCreated);";
 
                 using var insertPartCmd = new NpgsqlCommand(insertPartText, connection);
@@ -203,6 +228,7 @@ namespace Garderoba.Repository
                 insertPartCmd.Parameters.AddWithValue("@Name", newPart.Name ?? (object)DBNull.Value);
                 insertPartCmd.Parameters.AddWithValue("@PartNumber", newPart.PartNumber);
                 insertPartCmd.Parameters.AddWithValue("@Status", (int)newPart.Status);
+                insertPartCmd.Parameters.AddWithValue("@Gender", (int)newPart.Gender);
                 insertPartCmd.Parameters.AddWithValue("@DateCreated", DateTime.UtcNow);
 
                 int affectedRows = await insertPartCmd.ExecuteNonQueryAsync();

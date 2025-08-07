@@ -8,6 +8,8 @@ namespace Garderoba.WebApi.ViewModel
         public string Area { get; set; }
         public Gender Gender { get; set; } 
         public CostumeStatus Status { get; set; }
+        public string NecessaryParts {  get; set; }
+        public Guid? ChoreographyId { get; set; }
         public List<CostumePartCreation> Parts { get; set; } = new();
     }
 }
