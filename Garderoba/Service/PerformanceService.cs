@@ -13,24 +13,6 @@ namespace Garderoba.Service
         {
             _performanceRepository = performanceRepository;
         }
-
-        public async Task<int> GetMenCostumeCountAsync(Guid choreographyId)
-        {
-            return await _performanceRepository.GetMenCostumeCountAsync(choreographyId);
-        }
-        public async Task<List<Guid>> GetMaleCostumeIdsByChoreoIdAsync(Guid choreographyId)
-        {
-            return await _performanceRepository.GetMaleCostumeIdsByChoreoIdAsync(choreographyId);
-        }
-
-        public async Task<List<string>> GetNecessaryPartsListAsync(Guid costumeId)
-        {
-            return await _performanceRepository.GetNecessaryPartsListAsync(costumeId);
-        }
-        public async Task<bool> CompareNecessaryAndActualPartsAsync(Guid costumeId)
-        {
-            return await _performanceRepository.CompareNecessaryAndActualPartsAsync(costumeId);
-        }
         public async Task<(bool AllPartsAvailable, List<string> MissingParts)> CheckIfAllNecessaryPartsInStockWithMissingListAsync(Guid choreographyId)
         {
             return await _performanceRepository.CheckIfAllNecessaryPartsInStockWithMissingListAsync(choreographyId);
