@@ -12,6 +12,78 @@ namespace Garderoba.Repository
     {
         private const string _connectionString = "Host=localhost;Port=5433;Username=postgres;Password=PeLana2606;Database=Garderoba";
 
+        private async Task<Guid> InsertCostumeAsync(NpgsqlConnection connection, Costume costume, DateTime now)
+        {
+            var query = @"INSERT INTO ""Costume"" (
+                                ""Name"", ""Area"", ""Gender"", ""Status"", ""NecessaryParts"",
+                                ""DateCreated"", ""CreatedByUserId"")
+                            VALUES (
+                                @Name, @Area, @Gender, @Status, @NecessaryParts,
+                                @DateCreated, @CreatedByUserId)
+                            RETURNING ""Id"";";
+
+            using var cmd = new NpgsqlCommand(query, connection);
+            cmd.Parameters.AddWithValue("@Name", costume.Name ?? (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("@Area", costume.Area ?? (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("@Gender", (int)costume.Gender);
+            cmd.Parameters.AddWithValue("@Status", (int)costume.Status);
+            cmd.Parameters.AddWithValue("@NecessaryParts", costume.NecessaryParts ?? (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("@DateCreated", now);
+            cmd.Parameters.AddWithValue("@CreatedByUserId", costume.CreatedByUserId);
+
+            return (Guid)await cmd.ExecuteScalarAsync();
+        }
+
+        private async Task LinkCostumeToChoreographyAsync(NpgsqlConnection connection, Guid costumeId, Guid choreographyId)
+        {
+            var query = @"INSERT INTO ""ChoreographyCostume"" (""ChoreographyId"", ""CostumeId"")
+                            VALUES (@ChoreographyId, @CostumeId);";
+
+            using var cmd = new NpgsqlCommand(query, connection);
+            cmd.Parameters.AddWithValue("@ChoreographyId", choreographyId);
+            cmd.Parameters.AddWithValue("@CostumeId", costumeId);
+            await cmd.ExecuteNonQueryAsync();
+        }
+
+        private async Task<Guid> InsertCostumePartAsync(NpgsqlConnection connection, Guid costumeId, CostumePart part, DateTime now)
+        {
+            var query = @"INSERT INTO ""CostumePart"" (
+                                ""CostumeId"", ""Region"", ""Name"", ""PartNumber"",
+                                ""Status"", ""Gender"", ""DateCreated"")
+                            VALUES (
+                                @CostumeId, @Region, @Name, @PartNumber,
+                                @Status, @Gender, @DateCreated)
+                            RETURNING ""Id"";";
+
+            using var cmd = new NpgsqlCommand(query, connection);
+            cmd.Parameters.AddWithValue("@CostumeId", costumeId);
+            cmd.Parameters.AddWithValue("@Region", part.Region ?? (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("@Name", part.Name ?? (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("@PartNumber", part.PartNumber);
+            cmd.Parameters.AddWithValue("@Status", (int)part.Status);
+            cmd.Parameters.AddWithValue("@Gender", (int)part.Gender);
+            cmd.Parameters.AddWithValue("@DateCreated", now);
+
+            return (Guid)await cmd.ExecuteScalarAsync();
+        }
+
+        private async Task InsertUserCostumePartAsync(NpgsqlConnection connection, Guid userId, Guid costumePartId, int quantity, DateTime now)
+        {
+            var query = @"INSERT INTO ""UserCostumePart"" (
+                                ""Id"", ""UserId"", ""CostumePartId"", ""Quantity"", ""DateCreated"")
+                            VALUES (
+                                @Id, @UserId, @CostumePartId, @Quantity, @DateCreated);";
+
+            using var cmd = new NpgsqlCommand(query, connection);
+            cmd.Parameters.AddWithValue("@Id", Guid.NewGuid());
+            cmd.Parameters.AddWithValue("@UserId", userId);
+            cmd.Parameters.AddWithValue("@CostumePartId", costumePartId);
+            cmd.Parameters.AddWithValue("@Quantity", quantity);
+            cmd.Parameters.AddWithValue("@DateCreated", now);
+
+            await cmd.ExecuteNonQueryAsync();
+        }
+
         public async Task<bool> CreateNewCostumeAsync(Costume costume, Guid? choreographyId)
         {
             try
@@ -19,107 +91,42 @@ namespace Garderoba.Repository
                 using var connection = new NpgsqlConnection(_connectionString);
                 await connection.OpenAsync();
 
-                var checkText = @"SELECT 1 FROM ""Costume"" WHERE ""Name"" = @Name;";
-                using var checkCommand = new NpgsqlCommand(checkText, connection);
-                checkCommand.Parameters.AddWithValue("@Name", costume.Name);
-
-                var exists = false;
-                using (var reader = await checkCommand.ExecuteReaderAsync())
-                {
-                    exists = await reader.ReadAsync();
-                }
-
-                if (exists)
-                {
-                    Console.WriteLine("This costume already exists.");
-                    return false;
-                }
+                var exists = await CheckCostumeExistsAsync(connection, costume.Name);
+                if (exists) return false;
 
                 var now = DateTime.UtcNow;
+                var costumeId = await InsertCostumeAsync(connection, costume, now);
 
-                var insertCostumeText = @"INSERT INTO ""Costume"" (
-                                ""Name"", 
-                                ""Area"", 
-                                ""Gender"", 
-                                ""Status"",
-                                ""NecessaryParts"",
-                                ""DateCreated"", 
-                                ""CreatedByUserId"")
-                            VALUES (
-                                @Name, 
-                                @Area, 
-                                @Gender, 
-                                @Status, 
-                                @NecessaryParts,
-                                @DateCreated, 
-                                @CreatedByUserId)
-                            RETURNING ""Id"";";
+                if (choreographyId.HasValue)
+                    await LinkCostumeToChoreographyAsync(connection, costumeId, choreographyId.Value);
 
-                using var insertCostumeCmd = new NpgsqlCommand(insertCostumeText, connection);
-
-                insertCostumeCmd.Parameters.AddWithValue("@Name", costume.Name ?? (object)DBNull.Value);
-                insertCostumeCmd.Parameters.AddWithValue("@Area", costume.Area ?? (object)DBNull.Value);
-                insertCostumeCmd.Parameters.AddWithValue("@Gender", (int)costume.Gender);
-                insertCostumeCmd.Parameters.AddWithValue("@Status", (int)costume.Status);
-                insertCostumeCmd.Parameters.AddWithValue("@NecessaryParts", costume.NecessaryParts ?? (object)DBNull.Value);
-                insertCostumeCmd.Parameters.AddWithValue("@DateCreated", now);
-                insertCostumeCmd.Parameters.AddWithValue("@CreatedByUserId", costume.CreatedByUserId);
-
-                var costumeId = (Guid)await insertCostumeCmd.ExecuteScalarAsync();
-
-                var insertChoreoCostumeText = @"INSERT INTO ""ChoreographyCostume"" (
-                                        ""ChoreographyId"",
-                                        ""CostumeId"")
-                                    VALUES (
-                                        @ChoreographyId,
-                                        @CostumeId);";
-
-                using var insertChoreoCostumeCmd = new NpgsqlCommand(insertChoreoCostumeText, connection);
-                insertChoreoCostumeCmd.Parameters.AddWithValue("@ChoreographyId", choreographyId);
-                insertChoreoCostumeCmd.Parameters.AddWithValue("@CostumeId", costumeId);
-
-                await insertChoreoCostumeCmd.ExecuteNonQueryAsync();
-
-                if (costume.Parts != null && costume.Parts.Count > 0)
+                foreach (var part in costume.Parts)
                 {
-                    foreach (var part in costume.Parts)
-                    {
-                        var insertPartText = @"INSERT INTO ""CostumePart"" (
-                                    ""CostumeId"", 
-                                    ""Region"", 
-                                    ""Name"", 
-                                    ""PartNumber"", 
-                                    ""Status"", 
-                                    ""Gender"",
-                                    ""DateCreated"")
-                                VALUES (
-                                    @CostumeId, 
-                                    @Region, 
-                                    @Name, 
-                                    @PartNumber, 
-                                    @Status, 
-                                    @Gender,
-                                    @DateCreated);";
-
-                        using var insertPartCmd = new NpgsqlCommand(insertPartText, connection);
-                        insertPartCmd.Parameters.AddWithValue("@CostumeId", costumeId);
-                        insertPartCmd.Parameters.AddWithValue("@Region", part.Region ?? (object)DBNull.Value);
-                        insertPartCmd.Parameters.AddWithValue("@Name", part.Name ?? (object)DBNull.Value);
-                        insertPartCmd.Parameters.AddWithValue("@PartNumber", part.PartNumber);
-                        insertPartCmd.Parameters.AddWithValue("@Status", (int)part.Status);
-                        insertPartCmd.Parameters.AddWithValue("@Gender", (int)part.Gender);
-                        insertPartCmd.Parameters.AddWithValue("@DateCreated", now);
-
-                        await insertPartCmd.ExecuteNonQueryAsync();
-                    }
+                    var costumePartId = await InsertCostumePartAsync(connection, costumeId, part, now);
+                    await InsertUserCostumePartAsync(connection, costume.CreatedByUserId, costumePartId, part.PartNumber, now);
                 }
 
-                Console.WriteLine("Costume successfully created with parts and linked to choreography.");
                 return true;
             }
-            catch (Exception ex)
+            catch
             {
-                Console.WriteLine("Error during costume creation: " + ex.Message);
+                return false;
+            }
+        }
+
+        private async Task<bool> CheckCostumeExistsAsync(NpgsqlConnection connection, string costumeName)
+        {
+            try
+            {
+                var query = @"SELECT 1 FROM ""Costume"" WHERE ""Name"" = @Name;";
+                using var cmd = new NpgsqlCommand(query, connection);
+                cmd.Parameters.AddWithValue("@Name", costumeName);
+
+                using var reader = await cmd.ExecuteReaderAsync();
+                return await reader.ReadAsync();
+            }
+            catch
+            {
                 return false;
             }
         }

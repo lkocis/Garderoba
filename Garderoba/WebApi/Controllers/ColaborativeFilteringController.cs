@@ -13,9 +13,11 @@ namespace Garderoba.WebApi.Controllers
         private readonly IUserService _userService;
         private readonly ICostumeService _costumeService;
 
-        public ColaborativeFilteringController(IColaborativeFilteringService colaborativeFilteringService)
+        public ColaborativeFilteringController(IColaborativeFilteringService colaborativeFilteringService, IUserService userService, ICostumeService costumeService)
         {
             _colaborativeFilteringService = colaborativeFilteringService;
+            _userService = userService;
+            _costumeService = costumeService;
         }
 
         [Authorize]
@@ -25,26 +27,32 @@ namespace Garderoba.WebApi.Controllers
         {
             try
             {
-                var emailsAndParts = new Dictionary<string, List<string>>();
+                var emailsAndParts = new Dictionary<string, Dictionary<string, int>>();
                 var recommendedUsers = await _colaborativeFilteringService.FindUserWithCostumePartsAsync(choreographyId);
 
                 if (recommendedUsers != null)
                 {
                     foreach (var userId in recommendedUsers.Keys)
                     {
-                        var user = await _userService.ReadUserAsync(userId); 
-                        var partNames = new List<string>();
+                        var user = await _userService.ReadUserAsync(userId);
+                        var partNames = new Dictionary<string, int>();
 
-                        foreach (var partId in recommendedUsers[userId])
+                        foreach (var kvp in recommendedUsers[userId])
                         {
-                            var part = await _costumeService.GetCostumePartByIdAsync(partId); 
-                            partNames.Add(part.Name);
+                            var partId = kvp.Key;
+                            var quantity = kvp.Value;
+
+                            var part = await _costumeService.GetCostumePartByIdAsync(partId);
+                            if (part != null)
+                            {
+                                partNames.Add(part.Name, quantity);
+                            }
                         }
 
                         emailsAndParts[user.Email] = partNames;
                     }
 
-                    return Ok(emailsAndParts); 
+                    return Ok(emailsAndParts);
                 }
 
                 return NotFound("No users found with needed costume parts.");

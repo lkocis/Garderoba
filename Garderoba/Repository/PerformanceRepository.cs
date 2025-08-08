@@ -169,12 +169,12 @@ namespace Garderoba.Repository
                 {
                     if (!partCounts.ContainsKey(necessaryPart))
                     {
-                        missingParts.Add($"{(gender == 0 ? "Men" : "Women")} - {necessaryPart} (missing all {costumeCount} costumes)");
+                        missingParts.Add(necessaryPart);
                     }
                     else if (partCounts[necessaryPart] < costumeCount)
                     {
                         int missingCount = costumeCount - partCounts[necessaryPart];
-                        missingParts.Add($"{(gender == 0 ? "Men" : "Women")} - {necessaryPart} (missing {missingCount} costumes)");
+                        missingParts.Add(necessaryPart);
                     }
                 }
             }

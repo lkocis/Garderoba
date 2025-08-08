@@ -6,37 +6,43 @@ namespace Garderoba.Repository
 {
     public class ColaborativeFilteringRepository : IColaborativeFilteringRepository
     {
-        private IPerformanceRepository _performanceRepository;
-        private IUserRepository _userRepository;
-        
         private const string _connectionString = "Host=localhost;Port=5433;Username=postgres;Password=PeLana2606;Database=Garderoba";
 
-        public async Task<Dictionary<Guid, List<Guid>>> FindUserWithCostumePartsAsync(Guid choreographyId)
+        private IPerformanceRepository _performanceRepository;
+        private IUserRepository _userRepository;
+
+        public ColaborativeFilteringRepository(IPerformanceRepository performanceRepository, IUserRepository userRepository)
+        {
+            _performanceRepository = performanceRepository;
+            _userRepository = userRepository;
+        }
+
+        public async Task<Dictionary<Guid, Dictionary<Guid, int>>> FindUserWithCostumePartsAsync(Guid choreographyId)
         {
             try
             {
-                var userCostumeParts = await GetUserCostumePartsAsync(); // returns Dict<UserId, Dict<CostumePartId, Quantity>>
+                var userCostumeParts = await GetUserCostumePartsAsync(); // Dict<UserId, Dict<CostumePartId, Quantity>>
 
-                var missingParts = await _performanceRepository.CheckIfAllNecessaryPartsInStockWithMissingListAsync(choreographyId);
+                var (allAvailable, missingPartsList) = await _performanceRepository.CheckIfAllNecessaryPartsInStockWithMissingListAsync(choreographyId);
 
-                var partNameToId = await GetPartNameToIdMapAsync();// returns Dictionary<Name, CostumePartId>
+                var partNameToId = await GetPartNameToIdMapAsync(); // Dictionary<Name, CostumePartId>
 
-                var usersWithNeededParts = new Dictionary<Guid, List<Guid>>(); // <UserId, List<CostumePartId>>
+                var usersWithNeededParts = new Dictionary<Guid, Dictionary<Guid, int>>(); // <UserId, <CostumePartId, Quantity>>
 
                 foreach (var user in userCostumeParts.Keys)
                 {
-                    foreach (var missingPartName in missingParts.MissingParts)
+                    foreach (var missingPartName in missingPartsList)
                     {
                         var missingPart = missingPartName.Trim().ToLower();
 
                         if (partNameToId.TryGetValue(missingPart, out Guid partId))
                         {
-                            if (userCostumeParts[user].ContainsKey(partId) && userCostumeParts[user][partId] > 0)
+                            if (userCostumeParts[user].TryGetValue(partId, out int quantity) && quantity > 0)
                             {
                                 if (!usersWithNeededParts.ContainsKey(user))
-                                    usersWithNeededParts[user] = new List<Guid>();
+                                    usersWithNeededParts[user] = new Dictionary<Guid, int>();
 
-                                usersWithNeededParts[user].Add(partId);
+                                usersWithNeededParts[user][partId] = quantity;
                             }
                         }
                     }
@@ -94,7 +100,7 @@ namespace Garderoba.Repository
                 var costumePartId = reader.GetGuid(reader.GetOrdinal("CostumePartId"));
                 var quantity = reader.GetInt32(reader.GetOrdinal("Quantity"));
 
-                if(mapCostumeParts.ContainsKey(userId))
+                if(!mapCostumeParts.ContainsKey(userId))
                 {
                     mapCostumeParts[userId] = new Dictionary<Guid, int>();
                 }
