@@ -48,6 +48,7 @@ namespace Garderoba.WebApi.Controllers
             return Ok(foundUser);
         }
 
+        [AllowAnonymous]
         [HttpPost]
         [Route("CreateUser")]
         public async Task<ActionResult> CreateUserAsync([FromBody] RegistrationRequest request)
@@ -67,14 +68,46 @@ namespace Garderoba.WebApi.Controllers
                 };
 
                 bool success = await _userService.CreateUserAsync(user);
-                if (success)
-                {
-                    return StatusCode(201, $"User created!");
-                }
-                else
+                if (!success)
                 {
                     return BadRequest("User creation failed.");
                 }
+
+                // Nakon uspješne kreacije korisnika, kreiraj token
+                var keyString = _configuration["Jwt:Key"];
+                var issuer = _configuration["Jwt:Issuer"];
+                var audience = _configuration["Jwt:Audience"];
+
+                if (string.IsNullOrEmpty(keyString))
+                {
+                    return StatusCode(500, "JWT Key is missing in configuration.");
+                }
+
+                var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(keyString));
+                var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+                var claims = new[]
+                {
+                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                    new Claim(ClaimTypes.Email, user.Email),
+                    new Claim(ClaimTypes.Name, user.FirstName ?? "")
+                };
+
+                var token = new JwtSecurityToken(
+                    issuer: issuer,
+                    audience: audience,
+                    claims: claims,
+                    expires: DateTime.UtcNow.AddHours(2),
+                    signingCredentials: credentials
+                );
+
+                var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
+
+                return Ok(new
+                {
+                    token = tokenString,
+                    message = $"User {user.Email} created and logged in!"
+                });
             }
             catch (Exception ex)
             {

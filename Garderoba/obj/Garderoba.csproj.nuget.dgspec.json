@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\Garderoba\\Garderoba\\Garderoba.csproj": {}
+    "D:\\Garderoba\\Garderoba\\Garderoba\\Garderoba.csproj": {}
   },
   "projects": {
-    "D:\\Garderoba\\Garderoba\\Garderoba.csproj": {
+    "D:\\Garderoba\\Garderoba\\Garderoba\\Garderoba.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Garderoba\\Garderoba\\Garderoba.csproj",
+        "projectUniqueName": "D:\\Garderoba\\Garderoba\\Garderoba\\Garderoba.csproj",
         "projectName": "Garderoba",
-        "projectPath": "D:\\Garderoba\\Garderoba\\Garderoba.csproj",
+        "projectPath": "D:\\Garderoba\\Garderoba\\Garderoba\\Garderoba.csproj",
         "packagesPath": "C:\\Users\\Lana Kočiš\\.nuget\\packages\\",
-        "outputPath": "D:\\Garderoba\\Garderoba\\obj\\",
+        "outputPath": "D:\\Garderoba\\Garderoba\\Garderoba\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

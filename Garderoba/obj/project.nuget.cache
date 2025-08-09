@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "5fVs1p8ex+k=",
+  "dgSpecHash": "9jrpEL8jl3Q=",
   "success": true,
-  "projectFilePath": "D:\\Garderoba\\Garderoba\\Garderoba.csproj",
+  "projectFilePath": "D:\\Garderoba\\Garderoba\\Garderoba\\Garderoba.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Lana Kočiš\\.nuget\\packages\\bcrypt.net-next\\4.0.3\\bcrypt.net-next.4.0.3.nupkg.sha512",
     "C:\\Users\\Lana Kočiš\\.nuget\\packages\\microsoft.aspnetcore.authentication.jwtbearer\\8.0.4\\microsoft.aspnetcore.authentication.jwtbearer.8.0.4.nupkg.sha512",
