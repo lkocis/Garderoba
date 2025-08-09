@@ -73,7 +73,6 @@ namespace Garderoba.WebApi.Controllers
                     return BadRequest("User creation failed.");
                 }
 
-                // Nakon uspješne kreacije korisnika, kreiraj token
                 var keyString = _configuration["Jwt:Key"];
                 var issuer = _configuration["Jwt:Issuer"];
                 var audience = _configuration["Jwt:Audience"];
@@ -106,6 +105,7 @@ namespace Garderoba.WebApi.Controllers
                 return Ok(new
                 {
                     token = tokenString,
+                    userid = user.Id,
                     message = $"User {user.Email} created and logged in!"
                 });
             }
@@ -131,14 +131,12 @@ namespace Garderoba.WebApi.Controllers
                 return Unauthorized("Invalid email or password.");
             }
 
-            // Read JWT settings from configuration
             var keyString = _configuration["Jwt:Key"];
             var issuer = _configuration["Jwt:Issuer"];
             var audience = _configuration["Jwt:Audience"];
 
             if (string.IsNullOrEmpty(keyString))
             {
-                // Optionally handle missing key gracefully
                 return StatusCode(500, "JWT Key is missing in configuration.");
             }
 
@@ -165,6 +163,7 @@ namespace Garderoba.WebApi.Controllers
             return Ok(new
             {
                 token = tokenString,
+                userid = user.Id,
                 message = $"{request.Email} logged in!"
             });
         }
