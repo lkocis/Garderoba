@@ -57,9 +57,9 @@ namespace Garderoba.Service
             return await _costumeRepository.GetAllCostumesAsync(userId, choreographyId);
         }
 
-        public async Task<List<CostumePart>> GetAllCostumePartsAsync(Guid costumeId)
+        public async Task<List<CostumePart>> GetAllCostumePartsAsync(Guid costumeId, Guid userId)
         {
-            return await _costumeRepository.GetAllCostumePartsAsync(costumeId);
+            return await _costumeRepository.GetAllCostumePartsAsync(costumeId, userId);
         }
 
         public async Task<CostumePart> GetCostumePartByIdAsync(Guid partId)

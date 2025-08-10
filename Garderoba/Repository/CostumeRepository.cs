@@ -377,7 +377,7 @@ namespace Garderoba.Repository
             return costumes;
         }
 
-        public async Task<List<CostumePart>> GetAllCostumePartsAsync(Guid costumeId)
+        public async Task<List<CostumePart>> GetAllCostumePartsAsync(Guid costumeId, Guid userId)
         {
             var costumeParts = new List<CostumePart>();
 
@@ -386,9 +386,16 @@ namespace Garderoba.Repository
                 using var connection = new NpgsqlConnection(_connectionString);
                 await connection.OpenAsync();
 
-                var commandText = @"SELECT * FROM ""CostumePart"" WHERE ""CostumeId"" = @CostumeId;";
+                var commandText = @"
+                                    SELECT cp.*
+                                    FROM ""CostumePart"" cp
+                                    JOIN ""Costume"" c ON cp.""CostumeId"" = c.""Id""
+                                    WHERE cp.""CostumeId"" = @CostumeId AND c.""CreatedByUserId"" = @UserId;
+                                ";
+
                 using var command = new NpgsqlCommand(commandText, connection);
                 command.Parameters.AddWithValue("@CostumeId", costumeId);
+                command.Parameters.AddWithValue("@UserId", userId);
 
                 using var reader = await command.ExecuteReaderAsync();
                 while (await reader.ReadAsync())

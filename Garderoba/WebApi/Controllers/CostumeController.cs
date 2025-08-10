@@ -201,15 +201,15 @@ namespace Garderoba.WebApi.Controllers
 
         [Authorize]
         [HttpGet]
-        [Route("GetAllCostumeParts/{costumeId}")]
-        public async Task<ActionResult> GetAllCostumePartsAsync(Guid costumeId)
+        [Route("GetAllCostumeParts/{costumeId}/{userId}")]
+        public async Task<ActionResult> GetAllCostumePartsAsync(Guid costumeId, Guid userId)
         {
             try
             {
                 if (costumeId == Guid.Empty)
                     return BadRequest("CostumeId is required.");
 
-                var costumeParts = await _costumeService.GetAllCostumePartsAsync(costumeId);
+                var costumeParts = await _costumeService.GetAllCostumePartsAsync(costumeId, userId);
 
                 var result = costumeParts.Select(cp => new AllCostumeParts
                 {

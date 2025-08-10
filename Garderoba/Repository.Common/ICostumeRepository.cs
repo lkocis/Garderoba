@@ -11,7 +11,7 @@ namespace Garderoba.Repository.Common
         Task<bool> DeleteCostumePartAsync(Guid id);
         Task<bool> DeleteCostumeWithPartsAsync(Guid costumeId);
         Task<List<Costume>> GetAllCostumesAsync(Guid userId, Guid choreographyId);
-        Task<List<CostumePart>> GetAllCostumePartsAsync(Guid costumeId);
+        Task<List<CostumePart>> GetAllCostumePartsAsync(Guid costumeId, Guid userId);
         Task<CostumePart> GetCostumePartByIdAsync(Guid partId);
     }
 }

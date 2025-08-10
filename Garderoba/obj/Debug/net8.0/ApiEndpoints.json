@@ -182,13 +182,18 @@
   {
     "ContainingType": "Garderoba.WebApi.Controllers.CostumeController",
     "Method": "GetAllCostumePartsAsync",
-    "RelativePath": "Costume/GetAllCostumeParts/{costumeId}",
+    "RelativePath": "Costume/GetAllCostumeParts/{costumeId}/{userId}",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
         "Name": "costumeId",
+        "Type": "System.Guid",
+        "IsRequired": true
+      },
+      {
+        "Name": "userId",
         "Type": "System.Guid",
         "IsRequired": true
       }
