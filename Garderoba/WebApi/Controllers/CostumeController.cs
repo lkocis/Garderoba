@@ -19,10 +19,11 @@ namespace Garderoba.WebApi.Controllers
             _configuration = configuration;
         }
 
+        
         [Authorize]
         [HttpPost]
         [Route("CreateCostume")]
-        public async Task<ActionResult> CreateCostumeAsync([FromBody] CreateCostumeWithParts model)
+        public async Task<ActionResult> CreateNewCostumeAsync([FromBody] CreateCostume model)
         {
             try
             {
@@ -33,16 +34,7 @@ namespace Garderoba.WebApi.Controllers
                     Gender = model.Gender,
                     Status = model.Status,
                     NecessaryParts = model.NecessaryParts,
-                    DateCreated = DateTime.UtcNow,
-                    Parts = model.Parts?.Select(p => new CostumePart
-                    {
-                        Region = p.Region,
-                        Name = p.Name,
-                        PartNumber = p.PartNumber,
-                        Status = p.Status,
-                        Gender = p.Gender,
-                        DateCreated = DateTime.UtcNow
-                    }).ToList()
+                    DateCreated = DateTime.UtcNow
                 };
 
                 bool success = await _costumeService.CreateNewCostumeAsync(costume, model.ChoreographyId);
@@ -179,12 +171,12 @@ namespace Garderoba.WebApi.Controllers
 
         [Authorize]
         [HttpGet]
-        [Route("GetAllCostumes")]
-        public async Task<ActionResult> GetAllCostumesAsync()
+        [Route("GetAllCostumes/{userId}/{choreoId}")]
+        public async Task<ActionResult> GetAllCostumesAsync(Guid userId, Guid choreoId)
         {
             try
             {
-                var costumes = await _costumeService.GetAllCostumesAsync();
+                var costumes = await _costumeService.GetAllCostumesAsync(userId, choreoId);
 
                 var result = costumes.Select(c => new AllCostumes
                 {
@@ -193,6 +185,11 @@ namespace Garderoba.WebApi.Controllers
                     Gender = c.Gender,
                     Status = c.Status
                 }).ToList();
+
+                if(result == null)
+                {
+                    return Ok("There are no costumes in inventory.");
+                }
 
                 return Ok(result);
             }

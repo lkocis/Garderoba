@@ -84,27 +84,22 @@ namespace Garderoba.Repository
             await cmd.ExecuteNonQueryAsync();
         }
 
-        public async Task<bool> CreateNewCostumeAsync(Costume costume, Guid? choreographyId)
+        public async Task<bool> CreateNewCostumeAsync(Costume costume, Guid? choreographyId, Guid userId)
         {
             try
             {
                 using var connection = new NpgsqlConnection(_connectionString);
                 await connection.OpenAsync();
 
-                var exists = await CheckCostumeExistsAsync(connection, costume.Name);
+                var exists = await CheckCostumeExistsAsync(connection, costume.Name, userId);
                 if (exists) return false;
 
                 var now = DateTime.UtcNow;
+                costume.CreatedByUserId = userId;
                 var costumeId = await InsertCostumeAsync(connection, costume, now);
 
                 if (choreographyId.HasValue)
                     await LinkCostumeToChoreographyAsync(connection, costumeId, choreographyId.Value);
-
-                foreach (var part in costume.Parts)
-                {
-                    var costumePartId = await InsertCostumePartAsync(connection, costumeId, part, now);
-                    await InsertUserCostumePartAsync(connection, costume.CreatedByUserId, costumePartId, part.PartNumber, now);
-                }
 
                 return true;
             }
@@ -114,13 +109,14 @@ namespace Garderoba.Repository
             }
         }
 
-        private async Task<bool> CheckCostumeExistsAsync(NpgsqlConnection connection, string costumeName)
+        private async Task<bool> CheckCostumeExistsAsync(NpgsqlConnection connection, string costumeName, Guid userId)
         {
             try
             {
-                var query = @"SELECT 1 FROM ""Costume"" WHERE ""Name"" = @Name;";
+                var query = @"SELECT 1 FROM ""Costume"" WHERE ""Name"" = @Name AND ""CreatedByUserId"" = @UserId LIMIT 1;";
                 using var cmd = new NpgsqlCommand(query, connection);
                 cmd.Parameters.AddWithValue("@Name", costumeName);
+                cmd.Parameters.AddWithValue("@UserId", userId);
 
                 using var reader = await cmd.ExecuteReaderAsync();
                 return await reader.ReadAsync();
@@ -302,7 +298,7 @@ namespace Garderoba.Repository
             }
         }
 
-        public async Task<List<Costume>> GetAllCostumesAsync()
+        public async Task<List<Costume>> GetAllCostumesAsync(Guid userId, Guid choreographyId)
         {
             var costumes = new List<Costume>();
 
@@ -311,24 +307,63 @@ namespace Garderoba.Repository
                 using var connection = new NpgsqlConnection(_connectionString);
                 await connection.OpenAsync();
 
-                var commandText = @"SELECT * FROM ""Costume"";";
+                var commandText = @"
+            SELECT 
+                c.""Id"" AS ""CostumeId"",
+                c.""Name"",
+                c.""Area"",
+                c.""Gender"",
+                c.""Status"",
+                c.""NecessaryParts"",
+                c.""DateCreated"",
+                c.""DateUpdated"",
+                c.""CreatedByUserId"",
+                u.""Id"" AS ""UserId"",
+                u.""Email"",
+                u.""FirstName"",
+                u.""LastName"",
+                u.""PhoneNumber"",
+                u.""Area"" AS ""UserArea"",
+                u.""KUDName"",
+                u.""DateCreated"" AS ""UserDateCreated"",
+                u.""DateUpdated"" AS ""UserDateUpdated""
+            FROM ""Costume"" c
+            JOIN ""User"" u ON c.""CreatedByUserId"" = u.""Id""
+            JOIN ""ChoreographyCostume"" cc ON c.""Id"" = cc.""CostumeId""
+            WHERE c.""CreatedByUserId"" = @UserId AND cc.""ChoreographyId"" = @ChoreographyId
+            ORDER BY c.""Name"";";
+
                 using var command = new NpgsqlCommand(commandText, connection);
+                command.Parameters.AddWithValue("@UserId", userId);
+                command.Parameters.AddWithValue("@ChoreographyId", choreographyId);
 
                 using var reader = await command.ExecuteReaderAsync();
                 while (await reader.ReadAsync())
                 {
                     var costume = new Costume
                     {
-                        Id = reader.GetGuid(reader.GetOrdinal("Id")),
+                        Id = reader.GetGuid(reader.GetOrdinal("CostumeId")),
                         Name = reader["Name"] as string,
                         Area = reader["Area"] as string,
                         Gender = (Gender)reader.GetInt32(reader.GetOrdinal("Gender")),
                         Status = (CostumeStatus)reader.GetInt32(reader.GetOrdinal("Status")),
-                        DateCreated = reader.GetDateTime(reader.GetOrdinal("DateCreated")),
-                        DateUpdated = reader.IsDBNull(reader.GetOrdinal("DateUpdated"))
-                            ? (DateTime?)null
-                            : reader.GetDateTime(reader.GetOrdinal("DateUpdated")),
-                        CreatedByUserId = reader.GetGuid(reader.GetOrdinal("CreatedByUserId"))
+                        NecessaryParts = reader["NecessaryParts"] as string,
+                        DateCreated = reader.IsDBNull(reader.GetOrdinal("DateCreated")) ? (DateTime?)null : reader.GetDateTime(reader.GetOrdinal("DateCreated")),
+                        DateUpdated = reader.IsDBNull(reader.GetOrdinal("DateUpdated")) ? (DateTime?)null : reader.GetDateTime(reader.GetOrdinal("DateUpdated")),
+                        CreatedByUserId = reader.GetGuid(reader.GetOrdinal("CreatedByUserId")),
+
+                        CreatedByUser = new User
+                        {
+                            Id = reader.GetGuid(reader.GetOrdinal("UserId")),
+                            Email = reader["Email"] as string,
+                            FirstName = reader["FirstName"] as string,
+                            LastName = reader["LastName"] as string,
+                            PhoneNumber = reader["PhoneNumber"] as string,
+                            Area = reader["UserArea"] as string,
+                            KUDName = reader["KUDName"] as string,
+                            DateCreated = reader.IsDBNull(reader.GetOrdinal("UserDateCreated")) ? (DateTime?)null : reader.GetDateTime(reader.GetOrdinal("UserDateCreated")),
+                            DateUpdated = reader.IsDBNull(reader.GetOrdinal("UserDateUpdated")) ? (DateTime?)null : reader.GetDateTime(reader.GetOrdinal("UserDateUpdated"))
+                        }
                     };
 
                     costumes.Add(costume);
@@ -336,7 +371,7 @@ namespace Garderoba.Repository
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Error in fetching all costumes: " + ex.Message);
+                Console.WriteLine("Error in fetching costumes for user: " + ex.Message);
             }
 
             return costumes;

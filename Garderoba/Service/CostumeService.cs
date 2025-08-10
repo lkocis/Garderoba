@@ -28,8 +28,8 @@ namespace Garderoba.Service
                 return false;
             }
 
-            costume.CreatedByUserId = userId;
-            return await _costumeRepository.CreateNewCostumeAsync(costume, choreographyId);
+            var tokenUserId = userId;
+            return await _costumeRepository.CreateNewCostumeAsync(costume, choreographyId, tokenUserId);
         }
 
         public async Task<bool> UpdateCostumePartAsync(Guid id, UpdatedCostumePartFields updatedFields)
@@ -52,9 +52,9 @@ namespace Garderoba.Service
             return await _costumeRepository.DeleteCostumeWithPartsAsync(costumeId);
         }
 
-        public async Task<List<Costume>> GetAllCostumesAsync()
+        public async Task<List<Costume>> GetAllCostumesAsync(Guid userId, Guid choreographyId)
         {
-            return await _costumeRepository.GetAllCostumesAsync();
+            return await _costumeRepository.GetAllCostumesAsync(userId, choreographyId);
         }
 
         public async Task<List<CostumePart>> GetAllCostumePartsAsync(Guid costumeId)

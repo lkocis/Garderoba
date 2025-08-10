@@ -85,6 +85,7 @@ namespace Garderoba.WebApi.Controllers
 
                 var result = choreographies.Select(c => new AllChoreographies
                 {
+                    Id = c.Id,
                     Name = c.Name,
                     Area = c.Area,
                     MenCostumeCount = c.MenCostumeCount,

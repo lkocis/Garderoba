@@ -4,6 +4,7 @@ namespace Garderoba.WebApi.ViewModel
 {
     public class AllChoreographies
     {
+        public Guid Id { get; set; }
         public string Name { get; set; }
 
         public string Area { get; set; }

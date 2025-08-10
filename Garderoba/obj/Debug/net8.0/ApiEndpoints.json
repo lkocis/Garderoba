@@ -117,7 +117,7 @@
   },
   {
     "ContainingType": "Garderoba.WebApi.Controllers.CostumeController",
-    "Method": "CreateCostumeAsync",
+    "Method": "CreateNewCostumeAsync",
     "RelativePath": "Costume/CreateCostume",
     "HttpMethod": "POST",
     "IsController": true,
@@ -125,7 +125,7 @@
     "Parameters": [
       {
         "Name": "model",
-        "Type": "Garderoba.WebApi.ViewModel.CreateCostumeWithParts",
+        "Type": "Garderoba.WebApi.ViewModel.CreateCostume",
         "IsRequired": true
       }
     ],
@@ -198,11 +198,22 @@
   {
     "ContainingType": "Garderoba.WebApi.Controllers.CostumeController",
     "Method": "GetAllCostumesAsync",
-    "RelativePath": "Costume/GetAllCostumes",
+    "RelativePath": "Costume/GetAllCostumes/{userId}/{choreoId}",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
-    "Parameters": [],
+    "Parameters": [
+      {
+        "Name": "userId",
+        "Type": "System.Guid",
+        "IsRequired": true
+      },
+      {
+        "Name": "choreoId",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
     "ReturnTypes": []
   },
   {
