@@ -1,5 +1,6 @@
 ﻿using Garderoba.Service;
 using Garderoba.Service.Common;
+using Garderoba.WebApi.ViewModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Runtime.InteropServices;
@@ -29,7 +30,7 @@ namespace Garderoba.WebApi.Controllers
                 return Ok(new
                 {
                     AllPartsAvailable = allAvailable,
-                    MissingParts = missingParts
+                    MissingParts = missingParts  
                 });
             }
             catch (Exception ex)

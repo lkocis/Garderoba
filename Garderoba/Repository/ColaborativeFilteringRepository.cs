@@ -33,7 +33,7 @@ namespace Garderoba.Repository
                 {
                     foreach (var missingPartName in missingPartsList)
                     {
-                        var missingPart = missingPartName.Trim().ToLower();
+                        var missingPart = missingPartName.Name.Trim().ToLower();
 
                         if (partNameToId.TryGetValue(missingPart, out Guid partId))
                         {

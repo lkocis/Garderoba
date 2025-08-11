@@ -1,6 +1,7 @@
 ﻿using Garderoba.Model;
 using Garderoba.Repository.Common;
 using Garderoba.Service.Common;
+using Garderoba.WebApi.ViewModel;
 using Npgsql;
 
 namespace Garderoba.Service
@@ -13,7 +14,7 @@ namespace Garderoba.Service
         {
             _performanceRepository = performanceRepository;
         }
-        public async Task<(bool AllPartsAvailable, List<string> MissingParts)> CheckIfAllNecessaryPartsInStockWithMissingListAsync(Guid choreographyId)
+        public async Task<(bool AllPartsAvailable, List<MissingPartsVM> MissingParts)> CheckIfAllNecessaryPartsInStockWithMissingListAsync(Guid choreographyId)
         {
             return await _performanceRepository.CheckIfAllNecessaryPartsInStockWithMissingListAsync(choreographyId);
         }

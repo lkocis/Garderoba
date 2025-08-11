@@ -1,5 +1,6 @@
 ﻿using Garderoba.Common;
 using Garderoba.Repository.Common;
+using Garderoba.WebApi.ViewModel;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Npgsql;
 
@@ -112,9 +113,9 @@ namespace Garderoba.Repository
             }
         }
 
-        public async Task<(bool AllPartsAvailable, List<string> MissingParts)> CheckIfAllNecessaryPartsInStockWithMissingListAsync(Guid choreographyId)
+        public async Task<(bool AllPartsAvailable, List<MissingPartsVM> MissingParts)> CheckIfAllNecessaryPartsInStockWithMissingListAsync(Guid choreographyId)
         {
-            var missingParts = new List<string>();
+            var missingParts = new List<MissingPartsVM>();
 
             try
             {
@@ -136,7 +137,7 @@ namespace Garderoba.Repository
             }
         }
 
-        private async Task CheckPartsAsync(List<Guid> costumeIds, int costumeCount, int gender, List<string> missingParts)
+        private async Task CheckPartsAsync(List<Guid> costumeIds, int costumeCount, int gender, List<MissingPartsVM> missingParts)
         {
             foreach (var costumeId in costumeIds)
             {
@@ -148,9 +149,9 @@ namespace Garderoba.Repository
                 var partCounts = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
 
                 var query = @"
-                        SELECT cp.""Name"", cp.""PartNumber""
-                        FROM ""CostumePart"" cp
-                        WHERE cp.""CostumeId"" = @CostumeId;"; 
+                SELECT cp.""Name"", cp.""PartNumber""
+                FROM ""CostumePart"" cp
+                WHERE cp.""CostumeId"" = @CostumeId;";
 
                 using var command = new NpgsqlCommand(query, connection);
                 command.Parameters.AddWithValue("@CostumeId", costumeId);
@@ -169,12 +170,22 @@ namespace Garderoba.Repository
                 {
                     if (!partCounts.ContainsKey(necessaryPart))
                     {
-                        missingParts.Add(necessaryPart);
+                        missingParts.Add(new MissingPartsVM
+                        {
+                            Name = necessaryPart,
+                            PartNumber = 0,
+                            Gender = (Gender)gender
+                        });
                     }
                     else if (partCounts[necessaryPart] < costumeCount)
                     {
                         int missingCount = costumeCount - partCounts[necessaryPart];
-                        missingParts.Add(necessaryPart);
+                        missingParts.Add(new MissingPartsVM
+                        {
+                            Name = necessaryPart,
+                            PartNumber = missingCount,
+                            Gender = (Gender)gender
+                        });
                     }
                 }
             }

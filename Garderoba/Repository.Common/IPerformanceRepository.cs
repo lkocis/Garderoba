@@ -1,4 +1,5 @@
-﻿using Npgsql;
+﻿using Garderoba.WebApi.ViewModel;
+using Npgsql;
 
 namespace Garderoba.Repository.Common
 {
@@ -7,6 +8,6 @@ namespace Garderoba.Repository.Common
         Task<int> GetCostumeCountAsync(Guid choreographyId, int gender);
         Task<List<Guid>> GetCostumeIdsByChoreoIdAsync(Guid choreographyId, int gender);
         Task<List<string>> GetNecessaryPartsListAsync(Guid costumeId);
-        Task<(bool AllPartsAvailable, List<string> MissingParts)> CheckIfAllNecessaryPartsInStockWithMissingListAsync(Guid choreographyId);
+        Task<(bool AllPartsAvailable, List<MissingPartsVM> MissingParts)> CheckIfAllNecessaryPartsInStockWithMissingListAsync(Guid choreographyId);
     }
 }
