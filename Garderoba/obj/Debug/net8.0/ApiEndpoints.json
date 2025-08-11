@@ -97,16 +97,11 @@
   {
     "ContainingType": "Garderoba.WebApi.Controllers.CostumeController",
     "Method": "AddCostumePartAsync",
-    "RelativePath": "Costume/AddCostumePart/{costumeId}",
+    "RelativePath": "Costume/AddCostumePart",
     "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,
     "Parameters": [
-      {
-        "Name": "costumeId",
-        "Type": "System.Guid",
-        "IsRequired": true
-      },
       {
         "Name": "newPartVm",
         "Type": "Garderoba.WebApi.ViewModel.CostumePartCreation",
@@ -182,18 +177,18 @@
   {
     "ContainingType": "Garderoba.WebApi.Controllers.CostumeController",
     "Method": "GetAllCostumePartsAsync",
-    "RelativePath": "Costume/GetAllCostumeParts/{costumeId}/{userId}",
+    "RelativePath": "Costume/GetAllCostumeParts/{userId}/{costumeId}",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
-        "Name": "costumeId",
+        "Name": "userId",
         "Type": "System.Guid",
         "IsRequired": true
       },
       {
-        "Name": "userId",
+        "Name": "costumeId",
         "Type": "System.Guid",
         "IsRequired": true
       }

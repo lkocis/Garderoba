@@ -78,14 +78,13 @@ namespace Garderoba.WebApi.Controllers
 
         [Authorize]
         [HttpPost]
-        [Route("AddCostumePart/{costumeId}")]
-        public async Task<ActionResult> AddCostumePartAsync(Guid costumeId, [FromBody] CostumePartCreation newPartVm)
+        [Route("AddCostumePart")]
+        public async Task<ActionResult> AddCostumePartAsync([FromBody] CostumePartCreation newPartVm)
         {
             try
             {
                 var costumePart = new CostumePart
                 {
-                    CostumeId = costumeId,
                     Region = newPartVm.Region,
                     Name = newPartVm.Name,
                     PartNumber = newPartVm.PartNumber,
@@ -93,7 +92,7 @@ namespace Garderoba.WebApi.Controllers
                     DateCreated = DateTime.UtcNow
                 };
 
-                var result = await _costumeService.AddCostumePartAsync(costumeId, costumePart);
+                var result = await _costumeService.AddCostumePartAsync(costumePart, newPartVm.CostumeId);
 
                 if (!result)
                     return BadRequest("Failed to add costume part.");
@@ -180,6 +179,7 @@ namespace Garderoba.WebApi.Controllers
 
                 var result = costumes.Select(c => new AllCostumes
                 {
+                    Id = c.Id,
                     Name = c.Name,
                     Area = c.Area,
                     Gender = c.Gender,
@@ -201,15 +201,12 @@ namespace Garderoba.WebApi.Controllers
 
         [Authorize]
         [HttpGet]
-        [Route("GetAllCostumeParts/{costumeId}/{userId}")]
-        public async Task<ActionResult> GetAllCostumePartsAsync(Guid costumeId, Guid userId)
+        [Route("GetAllCostumeParts/{userId}/{costumeId}")]
+        public async Task<ActionResult> GetAllCostumePartsAsync(Guid userId, Guid costumeId)
         {
             try
             {
-                if (costumeId == Guid.Empty)
-                    return BadRequest("CostumeId is required.");
-
-                var costumeParts = await _costumeService.GetAllCostumePartsAsync(costumeId, userId);
+                var costumeParts = await _costumeService.GetAllCostumePartsAsync(userId, costumeId);
 
                 var result = costumeParts.Select(cp => new AllCostumeParts
                 {

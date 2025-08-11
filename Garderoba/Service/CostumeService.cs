@@ -37,9 +37,9 @@ namespace Garderoba.Service
             return await _costumeRepository.UpdateCostumePartAsync(id, updatedFields);
         }
 
-        public async Task<bool> AddCostumePartAsync(Guid costumeId, CostumePart newPart)
+        public async Task<bool> AddCostumePartAsync(CostumePart newPart, Guid costumeId)
         {
-            return await _costumeRepository.AddCostumePartAsync(costumeId, newPart);   
+            return await _costumeRepository.AddCostumePartAsync(newPart, costumeId);   
         }
 
         public async Task<bool> DeleteCostumePartAsync(Guid id)
@@ -57,9 +57,9 @@ namespace Garderoba.Service
             return await _costumeRepository.GetAllCostumesAsync(userId, choreographyId);
         }
 
-        public async Task<List<CostumePart>> GetAllCostumePartsAsync(Guid costumeId, Guid userId)
+        public async Task<List<CostumePart>> GetAllCostumePartsAsync(Guid userId, Guid costumeId)
         {
-            return await _costumeRepository.GetAllCostumePartsAsync(costumeId, userId);
+            return await _costumeRepository.GetAllCostumePartsAsync(userId, costumeId);
         }
 
         public async Task<CostumePart> GetCostumePartByIdAsync(Guid partId)

@@ -201,7 +201,7 @@ namespace Garderoba.Repository
             }
         }
 
-        public async Task<bool> AddCostumePartAsync(Guid costumeId, CostumePart newPart)
+        public async Task<bool> AddCostumePartAsync(CostumePart newPart, Guid costumeId)
         {
             try
             {
@@ -377,7 +377,7 @@ namespace Garderoba.Repository
             return costumes;
         }
 
-        public async Task<List<CostumePart>> GetAllCostumePartsAsync(Guid costumeId, Guid userId)
+        public async Task<List<CostumePart>> GetAllCostumePartsAsync(Guid userId, Guid costumeId)
         {
             var costumeParts = new List<CostumePart>();
 

@@ -10,5 +10,6 @@ namespace Garderoba.WebApi.ViewModel
         public int PartNumber {  get; set; }
         public CostumeStatus Status { get; set; }
         public Gender Gender { get; set; }
+        public Guid CostumeId { get; set; }
     }
 }
