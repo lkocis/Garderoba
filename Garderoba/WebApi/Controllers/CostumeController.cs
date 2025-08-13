@@ -130,26 +130,6 @@ namespace Garderoba.WebApi.Controllers
 
         [Authorize]
         [HttpDelete]
-        [Route("DeleteCostume/{id}")]
-        public async Task<ActionResult> DeleteCostumeAsync(Guid id)
-        {
-            try
-            {
-                var success = await _costumeService.DeleteCostumeWithPartsAsync(id);
-
-                if (!success)
-                    return NotFound(new { message = "Costume not found or could not be deleted." });
-
-                return Ok(new { message = "Costume and its parts deleted successfully." });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { message = "An error occurred while deleting the costume.", details = ex.Message });
-            }
-        }
-
-        [Authorize]
-        [HttpDelete]
         [Route("DeleteCostumeWithParts/{costumeId}")]
         public async Task<ActionResult> DeleteCostumeWithPartsAsync(Guid costumeId)
         {
@@ -210,6 +190,7 @@ namespace Garderoba.WebApi.Controllers
 
                 var result = costumeParts.Select(cp => new AllCostumeParts
                 {
+                    Id = cp.Id,
                     Region = cp.Region,
                     Name = cp.Name,
                     PartNumber = cp.PartNumber,

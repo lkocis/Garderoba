@@ -20,7 +20,7 @@ namespace Garderoba.WebApi.Controllers
 
         [Authorize]
         [HttpGet]
-        [Route("GetMaleCostumeChoreographyCheck/{choreographyId}")]
+        [Route("GetCostumeChoreographyCheck/{choreographyId}")]
         public async Task<IActionResult> CheckCostumePartsAvailability(Guid choreographyId)
         {
             try
