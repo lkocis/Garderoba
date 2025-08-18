@@ -43,22 +43,6 @@
   },
   {
     "ContainingType": "Garderoba.WebApi.Controllers.ChoreographyController",
-    "Method": "GetChoreographyByIdAsync",
-    "RelativePath": "Choreography/GetChoreographyById/{id}",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "id",
-        "Type": "System.Guid",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "Garderoba.WebApi.Controllers.ChoreographyController",
     "Method": "UpdateChoreographyByIdAsync",
     "RelativePath": "Choreography/UpdateChoreographyById/{id}",
     "HttpMethod": "PUT",
@@ -121,22 +105,6 @@
       {
         "Name": "model",
         "Type": "Garderoba.WebApi.ViewModel.CreateCostume",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "Garderoba.WebApi.Controllers.CostumeController",
-    "Method": "DeleteCostumeAsync",
-    "RelativePath": "Costume/DeleteCostume/{id}",
-    "HttpMethod": "DELETE",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "id",
-        "Type": "System.Guid",
         "IsRequired": true
       }
     ],
@@ -218,6 +186,27 @@
   },
   {
     "ContainingType": "Garderoba.WebApi.Controllers.CostumeController",
+    "Method": "UpdateCostumeAsync",
+    "RelativePath": "Costume/UpdateCostume/{id}",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Guid",
+        "IsRequired": true
+      },
+      {
+        "Name": "updatedFields",
+        "Type": "Garderoba.WebApi.ViewModel.UpdatedCostumeFields",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Garderoba.WebApi.Controllers.CostumeController",
     "Method": "UpdateCostumePartAsync",
     "RelativePath": "Costume/UpdateCostumePart/{id}",
     "HttpMethod": "POST",
@@ -240,7 +229,7 @@
   {
     "ContainingType": "Garderoba.WebApi.Controllers.PerformanceController",
     "Method": "CheckCostumePartsAvailability",
-    "RelativePath": "Performance/GetMaleCostumeChoreographyCheck/{choreographyId}",
+    "RelativePath": "Performance/GetCostumeChoreographyCheck/{choreographyId}",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,

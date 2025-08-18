@@ -17,7 +17,7 @@ namespace Garderoba.Repository
             _userRepository = userRepository;
         }
 
-        public async Task<Dictionary<Guid, Dictionary<Guid, int>>> FindUserWithCostumePartsAsync(Guid choreographyId)
+        public async Task<Dictionary<Guid, Dictionary<Guid, int>>> FindUserWithCostumePartsAsync(Guid choreographyId, Guid currentUserId)
         {
             try
             {
@@ -31,6 +31,9 @@ namespace Garderoba.Repository
 
                 foreach (var user in userCostumeParts.Keys)
                 {
+                    if (user == currentUserId)
+                        continue;
+
                     foreach (var missingPartName in missingPartsList)
                     {
                         var missingPart = missingPartName.Name.Trim().ToLower();

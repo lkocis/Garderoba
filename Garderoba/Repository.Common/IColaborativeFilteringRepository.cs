@@ -2,6 +2,6 @@
 {
     public interface IColaborativeFilteringRepository
     {
-        Task<Dictionary<Guid, Dictionary<Guid, int>>> FindUserWithCostumePartsAsync(Guid choreographyId);
+        Task<Dictionary<Guid, Dictionary<Guid, int>>> FindUserWithCostumePartsAsync(Guid choreographyId, Guid currentUserId);
     }
 }

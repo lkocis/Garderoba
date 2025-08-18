@@ -149,9 +149,9 @@ namespace Garderoba.Repository
                 var partCounts = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
 
                 var query = @"
-                SELECT cp.""Name"", cp.""PartNumber""
-                FROM ""CostumePart"" cp
-                WHERE cp.""CostumeId"" = @CostumeId;";
+                            SELECT cp.""Name"", cp.""PartNumber""
+                            FROM ""CostumePart"" cp
+                            WHERE cp.""CostumeId"" = @CostumeId;";
 
                 using var command = new NpgsqlCommand(query, connection);
                 command.Parameters.AddWithValue("@CostumeId", costumeId);
@@ -168,27 +168,31 @@ namespace Garderoba.Repository
 
                 foreach (var necessaryPart in necessaryParts)
                 {
-                    if (!partCounts.ContainsKey(necessaryPart))
+                    partCounts.TryGetValue(necessaryPart, out int availableCount);
+
+                    if (availableCount < costumeCount)
                     {
                         missingParts.Add(new MissingPartsVM
                         {
                             Name = necessaryPart,
-                            PartNumber = 0,
-                            Gender = (Gender)gender
-                        });
-                    }
-                    else if (partCounts[necessaryPart] < costumeCount)
-                    {
-                        int missingCount = costumeCount - partCounts[necessaryPart];
-                        missingParts.Add(new MissingPartsVM
-                        {
-                            Name = necessaryPart,
-                            PartNumber = missingCount,
+                            PartNumber = costumeCount - availableCount,
                             Gender = (Gender)gender
                         });
                     }
                 }
+
+                missingParts = missingParts
+                    .GroupBy(mp => new { mp.Name, mp.Gender })
+                    .Select(g => new MissingPartsVM
+                    {
+                        Name = g.Key.Name,
+                        Gender = g.Key.Gender,
+                        PartNumber = g.Sum(x => x.PartNumber)
+                    })
+                    .ToList();
             }
         }
+
+
     }
 }

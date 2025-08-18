@@ -39,7 +39,14 @@ namespace Garderoba.Service
 
         public async Task<bool> AddCostumePartAsync(CostumePart newPart, Guid costumeId)
         {
-            return await _costumeRepository.AddCostumePartAsync(newPart, costumeId);   
+            var userIdString = _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrEmpty(userIdString) || !Guid.TryParse(userIdString, out Guid userId))
+            {
+                throw new Exception("Current user ID not found or invalid.");
+            }
+
+            return await _costumeRepository.AddCostumePartAsync(newPart, costumeId, userId);   
         }
 
         public async Task<bool> DeleteCostumePartAsync(Guid id)
@@ -65,6 +72,11 @@ namespace Garderoba.Service
         public async Task<CostumePart> GetCostumePartByIdAsync(Guid partId)
         {
             return await _costumeRepository.GetCostumePartByIdAsync(partId);
+        }
+
+        public async Task<bool> UpdateCostumeAsync(Guid id, UpdatedCostumeFields updatedFields)
+        {
+            return await _costumeRepository.UpdateCostumeAsync(id, updatedFields);
         }
     }
 

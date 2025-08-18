@@ -163,7 +163,8 @@ namespace Garderoba.WebApi.Controllers
                     Name = c.Name,
                     Area = c.Area,
                     Gender = c.Gender,
-                    Status = c.Status
+                    Status = c.Status,
+                    NecessaryParts = c.NecessaryParts
                 }).ToList();
 
                 if(result == null)
@@ -198,6 +199,28 @@ namespace Garderoba.WebApi.Controllers
                 }).ToList();
 
                 return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
+
+        [Authorize]
+        [HttpPost]
+        [Route("UpdateCostume/{id}")]
+        public async Task<IActionResult> UpdateCostumeAsync(Guid id, [FromBody] UpdatedCostumeFields updatedFields)
+        {
+            try
+            {
+                bool result = await _costumeService.UpdateCostumeAsync(id, updatedFields);
+
+                if (!result)
+                {
+                    return NotFound("Costume not found or update failed.");
+                }
+
+                return Ok("Costume updated successfully.");
             }
             catch (Exception ex)
             {

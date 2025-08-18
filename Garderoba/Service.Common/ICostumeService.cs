@@ -13,5 +13,6 @@ namespace Garderoba.Service.Common
         Task<List<Costume>> GetAllCostumesAsync(Guid userId, Guid choreographyId);
         Task<List<CostumePart>> GetAllCostumePartsAsync(Guid userId, Guid costumeId);
         Task<CostumePart> GetCostumePartByIdAsync(Guid partId);
+        Task<bool> UpdateCostumeAsync(Guid id, UpdatedCostumeFields updatedFields);
     }
 }

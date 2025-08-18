@@ -9,6 +9,5 @@ namespace Garderoba.Service.Common
         Task<bool> DeleteChoreographyByIdAsync(Guid id);
         Task<List<Choreography>> GetAllChoreographiesAsync();
         Task<bool> UpdateChoreographyByIdAsync(Guid id, UpdatedChoreographyFields updatedChoreography);
-        Task<Choreography> GetChoreographyByIdAsync(Guid id);
     }
 }

@@ -45,10 +45,5 @@ namespace Garderoba.Service
         {
             return await _choreographyRepository.UpdateChoreographyByIdAsync(id, updatedChoreography);
         }
-
-        public async Task<Choreography> GetChoreographyByIdAsync(Guid id)
-        {
-            return await _choreographyRepository.GetChoreographyByIdAsync(id);
-        }
     }
 }

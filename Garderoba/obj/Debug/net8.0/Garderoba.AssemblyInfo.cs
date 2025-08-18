@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Garderoba")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+df42f89d1d601a9b52f53918c6a338a3cf452bfa")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+408b7a735d2b6e8e37391785977766a9e47ce1af")]
 [assembly: System.Reflection.AssemblyProductAttribute("Garderoba")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Garderoba")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
