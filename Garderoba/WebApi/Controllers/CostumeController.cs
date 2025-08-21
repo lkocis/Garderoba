@@ -32,7 +32,6 @@ namespace Garderoba.WebApi.Controllers
                     Name = model.Name,
                     Area = model.Area,
                     Gender = model.Gender,
-                    Status = model.Status,
                     NecessaryParts = model.NecessaryParts,
                     DateCreated = DateTime.UtcNow
                 };
@@ -163,7 +162,6 @@ namespace Garderoba.WebApi.Controllers
                     Name = c.Name,
                     Area = c.Area,
                     Gender = c.Gender,
-                    Status = c.Status,
                     NecessaryParts = c.NecessaryParts
                 }).ToList();
 

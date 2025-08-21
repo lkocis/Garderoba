@@ -2,7 +2,7 @@
 {
     public enum CostumeStatus
     {
-        AllAvailable,
-        SomeMissing
+        Available,
+        NeedsFixing,
     }
 }

@@ -21,19 +21,18 @@ namespace Garderoba.Repository
         {
             try
             {
-                var userCostumeParts = await GetUserCostumePartsAsync(); // Dict<UserId, Dict<CostumePartId, Quantity>>
+                var userCostumeParts = await GetUserCostumePartsAsync();
 
                 var (allAvailable, missingPartsList) = await _performanceRepository.CheckIfAllNecessaryPartsInStockWithMissingListAsync(choreographyId);
 
-                var partNameToId = await GetPartNameToIdMapAsync(); // Dictionary<Name, CostumePartId>
+                var partNameToId = await GetPartNameToIdMapAsync();
 
-                var usersWithNeededParts = new Dictionary<Guid, Dictionary<Guid, int>>(); // <UserId, <CostumePartId, Quantity>>
+                var usersWithNeededParts = new Dictionary<Guid, Dictionary<Guid, int>>();
 
-                foreach (var user in userCostumeParts.Keys)
+                var similarities = await CalculateUserSimilaritiesAsync(currentUserId);
+
+                foreach (var user in similarities.Keys)
                 {
-                    if (user == currentUserId)
-                        continue;
-
                     foreach (var missingPartName in missingPartsList)
                     {
                         var missingPart = missingPartName.Name.Trim().ToLower();
@@ -113,6 +112,54 @@ namespace Garderoba.Repository
             }
 
             return mapCostumeParts;
+        }
+
+        private async Task<Dictionary<Guid, double>> CalculateUserSimilaritiesAsync(Guid currentUserId)
+        {
+            var userCostumeParts = await GetUserCostumePartsAsync();
+            // userCostumeParts: Dict<UserId, Dict<CostumePartId, Quantity>>
+
+            var similarities = new Dictionary<Guid, double>();
+
+            if (!userCostumeParts.ContainsKey(currentUserId))
+                return similarities;
+
+            var currentVector = userCostumeParts[currentUserId];
+
+            foreach (var user in userCostumeParts.Keys)
+            {
+                if (user == currentUserId) continue;
+
+                var otherVector = userCostumeParts[user];
+
+                double dotProduct = 0;
+                double currentUserNorm = 0;
+                double otherUserNorm = 0;
+
+                var allParts = currentVector.Keys.Union(otherVector.Keys);
+
+                foreach (var partId in allParts)
+                {
+                    currentVector.TryGetValue(partId, out int currentUserQuantity);
+                    otherVector.TryGetValue(partId, out int otherUserQuantity);
+
+                    dotProduct += currentUserQuantity * otherUserQuantity;
+                    currentUserNorm += currentUserQuantity * currentUserQuantity;
+                    otherUserNorm += otherUserQuantity * otherUserQuantity;
+                }
+
+                double cosineSimilarity = 0;
+                if (currentUserNorm > 0 && otherUserNorm > 0)
+                {
+                    cosineSimilarity = dotProduct / (Math.Sqrt(currentUserNorm) * Math.Sqrt(otherUserNorm));
+                }
+
+                similarities[user] = cosineSimilarity;
+            }
+
+            return similarities
+                .OrderByDescending(x => x.Value)
+                .ToDictionary(x => x.Key, x => x.Value);
         }
     }
 }

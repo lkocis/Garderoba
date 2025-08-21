@@ -15,10 +15,10 @@ namespace Garderoba.Repository
         private async Task<Guid> InsertCostumeAsync(NpgsqlConnection connection, Costume costume, DateTime now, Guid userId)
         {
             var query = @"INSERT INTO ""Costume"" (
-                                ""Name"", ""Area"", ""Gender"", ""Status"", ""NecessaryParts"",
+                                ""Name"", ""Area"", ""Gender"", ""NecessaryParts"",
                                 ""DateCreated"", ""CreatedByUserId"")
                             VALUES (
-                                @Name, @Area, @Gender, @Status, @NecessaryParts,
+                                @Name, @Area, @Gender, @NecessaryParts,
                                 @DateCreated, @CreatedByUserId)
                             RETURNING ""Id"";";
 
@@ -26,7 +26,6 @@ namespace Garderoba.Repository
             cmd.Parameters.AddWithValue("@Name", costume.Name ?? (object)DBNull.Value);
             cmd.Parameters.AddWithValue("@Area", costume.Area ?? (object)DBNull.Value);
             cmd.Parameters.AddWithValue("@Gender", (int)costume.Gender);
-            cmd.Parameters.AddWithValue("@Status", (int)costume.Status);
             cmd.Parameters.AddWithValue("@NecessaryParts", costume.NecessaryParts ?? (object)DBNull.Value);
             cmd.Parameters.AddWithValue("@DateCreated", now);
             cmd.Parameters.AddWithValue("@CreatedByUserId", costume.CreatedByUserId);
@@ -308,7 +307,6 @@ namespace Garderoba.Repository
                 c.""Name"",
                 c.""Area"",
                 c.""Gender"",
-                c.""Status"",
                 c.""NecessaryParts"",
                 c.""DateCreated"",
                 c.""DateUpdated"",
@@ -341,7 +339,6 @@ namespace Garderoba.Repository
                         Name = reader["Name"] as string,
                         Area = reader["Area"] as string,
                         Gender = (Gender)reader.GetInt32(reader.GetOrdinal("Gender")),
-                        Status = (CostumeStatus)reader.GetInt32(reader.GetOrdinal("Status")),
                         NecessaryParts = reader["NecessaryParts"] as string,
                         DateCreated = reader.IsDBNull(reader.GetOrdinal("DateCreated")) ? (DateTime?)null : reader.GetDateTime(reader.GetOrdinal("DateCreated")),
                         DateUpdated = reader.IsDBNull(reader.GetOrdinal("DateUpdated")) ? (DateTime?)null : reader.GetDateTime(reader.GetOrdinal("DateUpdated")),
@@ -475,7 +472,6 @@ namespace Garderoba.Repository
                             Name = reader["Name"]?.ToString(),
                             Area = reader["Area"]?.ToString(),
                             Gender = (Gender)Convert.ToInt32(reader["Gender"]),
-                            Status = (CostumeStatus)Convert.ToInt32(reader["Status"]),
                             NecessaryParts = reader["NecessaryParts"]?.ToString()
                         };
                     }
@@ -489,7 +485,6 @@ namespace Garderoba.Repository
                 existingCostume.Name = updatedFields.Name ?? existingCostume.Name;
                 existingCostume.Area = updatedFields.Area ?? existingCostume.Area;
                 existingCostume.Gender = updatedFields.Gender ?? existingCostume.Gender;
-                existingCostume.Status = updatedFields.Status ?? existingCostume.Status;
                 existingCostume.NecessaryParts = updatedFields.NecessaryParts ?? existingCostume.NecessaryParts;
 
                 var updateQuery = @"
@@ -497,7 +492,6 @@ namespace Garderoba.Repository
                                         ""Name"" = @Name,
                                         ""Area"" = @Area,
                                         ""Gender"" = @Gender,
-                                        ""Status"" = @Status,
                                         ""NecessaryParts"" = @NecessaryParts
                                     WHERE ""Id"" = @Id;";
 
@@ -506,7 +500,6 @@ namespace Garderoba.Repository
                 updateCmd.Parameters.AddWithValue("@Name", existingCostume.Name ?? (object)DBNull.Value);
                 updateCmd.Parameters.AddWithValue("@Area", existingCostume.Area ?? (object)DBNull.Value);
                 updateCmd.Parameters.AddWithValue("@Gender", (int)existingCostume.Gender);
-                updateCmd.Parameters.AddWithValue("@Status", (int)existingCostume.Status);
                 updateCmd.Parameters.AddWithValue("@NecessaryParts", existingCostume.NecessaryParts ?? (object)DBNull.Value);
                 updateCmd.Parameters.AddWithValue("@Id", id);
 

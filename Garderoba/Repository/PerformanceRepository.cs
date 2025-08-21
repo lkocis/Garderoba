@@ -192,7 +192,5 @@ namespace Garderoba.Repository
                     .ToList();
             }
         }
-
-
     }
 }
