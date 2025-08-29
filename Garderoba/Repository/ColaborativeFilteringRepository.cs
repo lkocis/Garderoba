@@ -21,9 +21,9 @@ namespace Garderoba.Repository
         {
             try
             {
-                var userCostumeParts = await GetUserCostumePartsAsync();
-
                 var (allAvailable, missingPartsList) = await _performanceRepository.CheckIfAllNecessaryPartsInStockWithMissingListAsync(choreographyId, currentUserId);
+
+                var userCostumeParts = await GetUserCostumePartsAsync();
 
                 var partNameToId = await GetPartNameToIdMapAsync();
 
@@ -31,8 +31,44 @@ namespace Garderoba.Repository
 
                 var similarities = await CalculateUserSimilaritiesAsync(currentUserId);
 
+                if (similarities.Count == 0)
+                {
+                    foreach (var user in userCostumeParts.Keys)
+                    {
+                        foreach (var missingPartName in missingPartsList)
+                        {
+                            var missingPart = missingPartName.Name.Trim().ToLower();
+                            if (partNameToId.TryGetValue(missingPart, out Guid partId))
+                            {
+                                if (userCostumeParts[user].TryGetValue(partId, out int quantity) && quantity > 0)
+                                {
+                                    if (!usersWithNeededParts.ContainsKey(user))
+                                        usersWithNeededParts[user] = new Dictionary<Guid, int>();
+
+                                    usersWithNeededParts[user][partId] = quantity;
+                                }
+                            }
+                        }
+                    }
+
+                    return usersWithNeededParts;
+                }
+
                 foreach (var user in similarities.Keys)
                 {
+                    if (!userCostumeParts.ContainsKey(user))
+                    {
+                        userCostumeParts[user] = new Dictionary<Guid, int>();
+                        foreach (var missingPartName in missingPartsList)
+                        {
+                            var missingPart = missingPartName.Name.Trim().ToLower();
+                            if (partNameToId.TryGetValue(missingPart, out Guid partId))
+                            {
+                                userCostumeParts[user][partId] = 0;
+                            }
+                        }
+                    }
+
                     foreach (var missingPartName in missingPartsList)
                     {
                         var missingPart = missingPartName.Name.Trim().ToLower();

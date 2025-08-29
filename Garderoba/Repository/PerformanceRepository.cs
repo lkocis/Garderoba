@@ -61,12 +61,12 @@ namespace Garderoba.Repository
                 await connection.OpenAsync();
 
                 var commandText = @"
-            SELECT c.""Id"" AS CostumeId
-            FROM ""ChoreographyCostume"" cc
-            JOIN ""Costume"" c ON cc.""CostumeId"" = c.""Id""
-            WHERE cc.""ChoreographyId"" = @ChoreographyId 
-              AND c.""Gender"" = @Gender
-              AND c.""CreatedByUserId"" = @UserId;";
+                            SELECT c.""Id"" AS CostumeId
+                            FROM ""ChoreographyCostume"" cc
+                            JOIN ""Costume"" c ON cc.""CostumeId"" = c.""Id""
+                            WHERE cc.""ChoreographyId"" = @ChoreographyId 
+                              AND c.""Gender"" = @Gender
+                              AND c.""CreatedByUserId"" = @UserId;";
 
                 using var command = new NpgsqlCommand(commandText, connection);
                 command.Parameters.AddWithValue("@ChoreographyId", choreographyId);
@@ -223,10 +223,10 @@ namespace Garderoba.Repository
             await connection.OpenAsync();
 
             var query = @"
-        SELECT DISTINCT c.""NecessaryParts""
-        FROM ""Costume"" c
-        JOIN ""ChoreographyCostume"" cc ON cc.""CostumeId"" = c.""Id""
-        WHERE cc.""ChoreographyId"" = @ChoreographyId AND c.""Gender"" = @Gender;";
+                        SELECT DISTINCT c.""NecessaryParts""
+                        FROM ""Costume"" c
+                        JOIN ""ChoreographyCostume"" cc ON cc.""CostumeId"" = c.""Id""
+                        WHERE cc.""ChoreographyId"" = @ChoreographyId AND c.""Gender"" = @Gender;";
 
             using var command = new NpgsqlCommand(query, connection);
             command.Parameters.AddWithValue("@ChoreographyId", choreographyId);
