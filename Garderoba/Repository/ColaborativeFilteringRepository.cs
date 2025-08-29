@@ -23,7 +23,7 @@ namespace Garderoba.Repository
             {
                 var userCostumeParts = await GetUserCostumePartsAsync();
 
-                var (allAvailable, missingPartsList) = await _performanceRepository.CheckIfAllNecessaryPartsInStockWithMissingListAsync(choreographyId);
+                var (allAvailable, missingPartsList) = await _performanceRepository.CheckIfAllNecessaryPartsInStockWithMissingListAsync(choreographyId, currentUserId);
 
                 var partNameToId = await GetPartNameToIdMapAsync();
 

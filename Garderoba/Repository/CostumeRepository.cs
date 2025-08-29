@@ -22,6 +22,8 @@ namespace Garderoba.Repository
                                 @DateCreated, @CreatedByUserId)
                             RETURNING ""Id"";";
 
+            costume.CreatedByUserId = userId;
+
             using var cmd = new NpgsqlCommand(query, connection);
             cmd.Parameters.AddWithValue("@Name", costume.Name ?? (object)DBNull.Value);
             cmd.Parameters.AddWithValue("@Area", costume.Area ?? (object)DBNull.Value);
@@ -302,29 +304,29 @@ namespace Garderoba.Repository
                 await connection.OpenAsync();
 
                 var commandText = @"
-            SELECT 
-                c.""Id"" AS ""CostumeId"",
-                c.""Name"",
-                c.""Area"",
-                c.""Gender"",
-                c.""NecessaryParts"",
-                c.""DateCreated"",
-                c.""DateUpdated"",
-                c.""CreatedByUserId"",
-                u.""Id"" AS ""UserId"",
-                u.""Email"",
-                u.""FirstName"",
-                u.""LastName"",
-                u.""PhoneNumber"",
-                u.""Area"" AS ""UserArea"",
-                u.""KUDName"",
-                u.""DateCreated"" AS ""UserDateCreated"",
-                u.""DateUpdated"" AS ""UserDateUpdated""
-            FROM ""Costume"" c
-            JOIN ""User"" u ON c.""CreatedByUserId"" = u.""Id""
-            JOIN ""ChoreographyCostume"" cc ON c.""Id"" = cc.""CostumeId""
-            WHERE c.""CreatedByUserId"" = @UserId AND cc.""ChoreographyId"" = @ChoreographyId
-            ORDER BY c.""Name"";";
+                SELECT 
+                    c.""Id"" AS ""CostumeId"",
+                    c.""Name"",
+                    c.""Area"",
+                    c.""Gender"",
+                    c.""NecessaryParts"",
+                    c.""DateCreated"",
+                    c.""DateUpdated"",
+                    c.""CreatedByUserId"",
+                    u.""Id"" AS ""UserId"",
+                    u.""Email"",
+                    u.""FirstName"",
+                    u.""LastName"",
+                    u.""PhoneNumber"",
+                    u.""Area"" AS ""UserArea"",
+                    u.""KUDName"",
+                    u.""DateCreated"" AS ""UserDateCreated"",
+                    u.""DateUpdated"" AS ""UserDateUpdated""
+                FROM ""Costume"" c
+                JOIN ""User"" u ON c.""CreatedByUserId"" = u.""Id""
+                JOIN ""ChoreographyCostume"" cc ON c.""Id"" = cc.""CostumeId""
+                WHERE c.""CreatedByUserId"" = @UserId AND cc.""ChoreographyId"" = @ChoreographyId
+                ORDER BY c.""Name"";";
 
                 using var command = new NpgsqlCommand(commandText, connection);
                 command.Parameters.AddWithValue("@UserId", userId);

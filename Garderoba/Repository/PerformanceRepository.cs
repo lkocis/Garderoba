@@ -1,4 +1,5 @@
 ﻿using Garderoba.Common;
+using Garderoba.Model;
 using Garderoba.Repository.Common;
 using Garderoba.WebApi.ViewModel;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -50,7 +51,7 @@ namespace Garderoba.Repository
             }
         }
 
-        public async Task<List<Guid>> GetCostumeIdsByChoreoIdAsync(Guid choreographyId, int gender)
+        public async Task<List<Guid>> GetCostumeIdsByChoreoIdAsync(Guid choreographyId, int gender, Guid userId)
         {
             var costumeIds = new List<Guid>();
 
@@ -60,14 +61,17 @@ namespace Garderoba.Repository
                 await connection.OpenAsync();
 
                 var commandText = @"
-                                SELECT c.""Id"" AS CostumeId
-                                FROM ""ChoreographyCostume"" cc
-                                JOIN ""Costume"" c ON cc.""CostumeId"" = c.""Id""
-                                WHERE cc.""ChoreographyId"" = @ChoreographyId AND c.""Gender"" = @Gender;";
+            SELECT c.""Id"" AS CostumeId
+            FROM ""ChoreographyCostume"" cc
+            JOIN ""Costume"" c ON cc.""CostumeId"" = c.""Id""
+            WHERE cc.""ChoreographyId"" = @ChoreographyId 
+              AND c.""Gender"" = @Gender
+              AND c.""CreatedByUserId"" = @UserId;";
 
                 using var command = new NpgsqlCommand(commandText, connection);
                 command.Parameters.AddWithValue("@ChoreographyId", choreographyId);
                 command.Parameters.AddWithValue("@Gender", gender);
+                command.Parameters.AddWithValue("@UserId", userId);
 
                 using var reader = await command.ExecuteReaderAsync();
                 while (await reader.ReadAsync())
@@ -82,6 +86,7 @@ namespace Garderoba.Repository
                 throw new Exception("Error retrieving costume IDs: " + ex.Message, ex);
             }
         }
+
         public async Task<List<string>> GetNecessaryPartsListAsync(Guid costumeId)
         {
             try
@@ -113,20 +118,20 @@ namespace Garderoba.Repository
             }
         }
 
-        public async Task<(bool AllPartsAvailable, List<MissingPartsVM> MissingParts)> CheckIfAllNecessaryPartsInStockWithMissingListAsync(Guid choreographyId)
+        public async Task<(bool AllPartsAvailable, List<MissingPartsVM> MissingParts)> CheckIfAllNecessaryPartsInStockWithMissingListAsync(Guid choreographyId, Guid userId)
         {
             var missingParts = new List<MissingPartsVM>();
 
             try
             {
                 int menCostumeCount = await GetCostumeCountAsync(choreographyId, gender: 0);
-                var maleCostumeIds = await GetCostumeIdsByChoreoIdAsync(choreographyId, gender: 0);
+                var maleCostumeIds = await GetCostumeIdsByChoreoIdAsync(choreographyId, gender: 0, userId);
 
                 int womenCostumeCount = await GetCostumeCountAsync(choreographyId, gender: 1);
-                var femaleCostumeIds = await GetCostumeIdsByChoreoIdAsync(choreographyId, gender: 1);
+                var femaleCostumeIds = await GetCostumeIdsByChoreoIdAsync(choreographyId, gender: 1, userId);
 
-                await CheckPartsAsync(maleCostumeIds, menCostumeCount, 0, missingParts);
-                await CheckPartsAsync(femaleCostumeIds, womenCostumeCount, 1, missingParts);
+                await CheckPartsAsync(maleCostumeIds, menCostumeCount, 0, missingParts, choreographyId);
+                await CheckPartsAsync(femaleCostumeIds, womenCostumeCount, 1, missingParts, choreographyId);
 
                 bool allAvailable = missingParts.Count == 0;
                 return (allAvailable, missingParts);
@@ -137,8 +142,25 @@ namespace Garderoba.Repository
             }
         }
 
-        private async Task CheckPartsAsync(List<Guid> costumeIds, int costumeCount, int gender, List<MissingPartsVM> missingParts)
+        private async Task CheckPartsAsync(List<Guid> costumeIds, int costumeCount, int gender, List<MissingPartsVM> missingParts, Guid choreoId)
         {
+            if (costumeIds == null || costumeIds.Count == 0)
+            {
+                var allParts = await GetNecessaryPartsByChoreoIdAsync(choreoId, gender);
+
+                foreach (var part in allParts)
+                {
+                    missingParts.Add(new MissingPartsVM
+                    {
+                        Name = part,
+                        PartNumber = costumeCount,
+                        Gender = (Gender)gender
+                    });
+                }
+
+                return;
+            }
+
             foreach (var costumeId in costumeIds)
             {
                 var necessaryParts = await GetNecessaryPartsListAsync(costumeId);
@@ -192,5 +214,34 @@ namespace Garderoba.Repository
                     .ToList();
             }
         }
+
+        private async Task<List<string>> GetNecessaryPartsByChoreoIdAsync(Guid choreographyId, int gender)
+        {
+            var necessaryPartsList = new List<string>();
+
+            using var connection = new NpgsqlConnection(_connectionString);
+            await connection.OpenAsync();
+
+            var query = @"
+        SELECT DISTINCT c.""NecessaryParts""
+        FROM ""Costume"" c
+        JOIN ""ChoreographyCostume"" cc ON cc.""CostumeId"" = c.""Id""
+        WHERE cc.""ChoreographyId"" = @ChoreographyId AND c.""Gender"" = @Gender;";
+
+            using var command = new NpgsqlCommand(query, connection);
+            command.Parameters.AddWithValue("@ChoreographyId", choreographyId);
+            command.Parameters.AddWithValue("@Gender", gender);
+
+            using var reader = await command.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+            {
+                var partsString = reader["NecessaryParts"]?.ToString();
+                if (!string.IsNullOrEmpty(partsString))
+                    necessaryPartsList.AddRange(partsString.Split(',', StringSplitOptions.TrimEntries));
+            }
+
+            return necessaryPartsList.Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+        }
+
     }
 }
