@@ -333,6 +333,12 @@ namespace Garderoba.Repository
                 command.Parameters.AddWithValue("@ChoreographyId", choreographyId);
 
                 using var reader = await command.ExecuteReaderAsync();
+
+                if (!reader.HasRows)
+                {
+                    Console.WriteLine("⚠️ No rows returned for given UserId and ChoreographyId.");
+                }
+
                 while (await reader.ReadAsync())
                 {
                     var costume = new Costume

@@ -215,7 +215,7 @@ namespace Garderoba.Repository
             }
         }
 
-        private async Task<List<string>> GetNecessaryPartsByChoreoIdAsync(Guid choreographyId, int gender)
+        public async Task<List<string>> GetNecessaryPartsByChoreoIdAsync(Guid choreographyId, int gender)
         {
             var necessaryPartsList = new List<string>();
 
@@ -231,6 +231,33 @@ namespace Garderoba.Repository
             using var command = new NpgsqlCommand(query, connection);
             command.Parameters.AddWithValue("@ChoreographyId", choreographyId);
             command.Parameters.AddWithValue("@Gender", gender);
+
+            using var reader = await command.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+            {
+                var partsString = reader["NecessaryParts"]?.ToString();
+                if (!string.IsNullOrEmpty(partsString))
+                    necessaryPartsList.AddRange(partsString.Split(',', StringSplitOptions.TrimEntries));
+            }
+
+            return necessaryPartsList.Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+        }
+
+        public async Task<List<string>> GetAllNecessaryPartsByChoreoIdAsync(Guid choreographyId)
+        {
+            var necessaryPartsList = new List<string>();
+
+            using var connection = new NpgsqlConnection(_connectionString);
+            await connection.OpenAsync();
+
+            var query = @"
+                        SELECT DISTINCT c.""NecessaryParts""
+                        FROM ""Costume"" c
+                        JOIN ""ChoreographyCostume"" cc ON cc.""CostumeId"" = c.""Id""
+                        WHERE cc.""ChoreographyId"" = @ChoreographyId;";
+
+            using var command = new NpgsqlCommand(query, connection);
+            command.Parameters.AddWithValue("@ChoreographyId", choreographyId);
 
             using var reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
